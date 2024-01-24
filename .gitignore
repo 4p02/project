@@ -1,2 +1,7 @@
 backend/venv
 __pycache__/
+
+# mac os garbage
+.DS_Store
+.AppleDouble
+.LSOverride

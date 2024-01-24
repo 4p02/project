@@ -18,6 +18,14 @@
    - Postgresql
 - 
 
+## TODO 
+- Add better versioning to pyproject.toml
+- Create routes 
+- Design database 
+- All route methods except
+  - ....
+- Setup server or SSL
+
 ## Naming convention
 - methods
     - snake_case

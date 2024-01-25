@@ -40,7 +40,7 @@ def login(form_data: Login):
 """
 Given a url, return a summary of the article
 """
-@app.post("/summerize")
+@app.post("/summarize")
 def summerize(form_data: Summerize):
     return f"<h1>Summerize Page {form_data.url} </h1>"
 

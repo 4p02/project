@@ -1,7 +1,7 @@
 [project]
 name = "4p02"
 version = "0.1.0"
-description = "web summerizer for 4p02"
+description = "web summarizer for 4p02"
 requires-python = ">=3.8"
 readme = "README.md"
 license = {file = "LICENSE"}

@@ -17,7 +17,7 @@ pip install -e .
 
 3. Run the main server entrypoint
 ```bash
-uvicorn src.main:app --reload
+uvicorn backend.main:app --reload
 ```
 
 

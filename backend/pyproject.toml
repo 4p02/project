@@ -1,8 +1,8 @@
 [project]
-name = "4p02"
+name = "backend"
 version = "0.1.0"
 description = "web summarizer for 4p02"
 requires-python = ">=3.8"
-readme = "README.md"
-license = {file = "LICENSE"}
+# readme = "README.md"
+# license = {file = "LICENSE"}
 dependencies = ["fastapi", "uvicorn", "jwt"]

@@ -1,5 +1,6 @@
-from models import Register, Login, Summerize
-from main import app
+from backend.models import Register, Login, Summerize
+from backend.main import app
+
 
 """
 Index route just returns a string for testing if the server is running
@@ -51,6 +52,3 @@ Given a url, return a shortened url
 @app.post("/shorten")
 def shorten(form_data: Summerize):
     return f"<h1>Shorten Page {form_data.url} </h1>"
-
-
-

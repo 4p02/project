@@ -15,9 +15,9 @@ source .venv/bin/activate
 pip install -e .
 ```
 
-3. Run the main entrypoint
+3. Run the main server entrypoint
 ```bash
-python3 src/main.py
+uvicorn src.main:app --reload
 ```
 
 

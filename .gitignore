@@ -1,5 +1,9 @@
+# python venv and package building shit
 backend/venv
+backend/.venv
+backend/4p02.egg-info
 __pycache__/
+.pytest_cache/
 
 # mac os garbage
 .DS_Store

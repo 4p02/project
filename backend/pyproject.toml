@@ -5,4 +5,9 @@ description = "web summarizer for 4p02"
 requires-python = ">=3.8"
 # readme = "README.md"
 # license = {file = "LICENSE"}
-dependencies = ["fastapi", "uvicorn", "jwt"]
+
+dependencies = [
+    "fastapi~=0.109",
+    "uvicorn~=0.27",
+    "jwt~=1.3",
+]

@@ -1,6 +1,6 @@
 import fastapi
 from fastapi.middleware.cors import CORSMiddleware
-from models import Login, Register, Summerize
+from models import Login, Register, Summarize
 from routes import Routes
 from auth import google, google_callback, register, login
 from constants import HOST, PORT

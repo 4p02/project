@@ -11,7 +11,5 @@ class Login(BaseModel):
     email: str
 
 
-class Summerize(BaseModel):
+class Summarize(BaseModel):
     url: str
-
-

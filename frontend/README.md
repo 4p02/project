@@ -8,3 +8,6 @@ https://react-icons.github.io/react-icons/
 
 React Hot Toast Docs:
 https://react-hot-toast.com/docs
+
+SVG background is from
+https://www.svgbackgrounds.com/

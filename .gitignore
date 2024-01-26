@@ -1,2 +1,16 @@
-/backend
-README.md
+# vscode garbage
+.vscode/
+
+# python venv and package building shit
+backend/venv
+backend/.venv
+backend/**/backend.egg-info
+backend/build
+__pycache__/
+.pytest_cache/
+.mypy_cache/
+
+# mac os garbage
+.DS_Store
+.AppleDouble
+.LSOverride

@@ -1,0 +1,4 @@
+SECRET_KEY = "secret"
+NUMBER_OF_DAYS_TO_EXPIRE = 1
+HOST = "0.0.0.0"
+PORT = 8000

@@ -1,82 +1,24 @@
+# backend
 
-# Team
+## Setting up your python environment
+To setup development environment, follow these steps:
 
-- Jonathan Coletti
-- Michael noyes 
-- Mike 
-- Meet 
+1. Setup the virtual environment:
+```bash
+cd backend
+virtualenv .venv
+source .venv/bin/activate
+```
 
-# Backend
+2. Install project dependencies:
+```bash
+pip install -e .
+```
 
-- Auth
-  - Email and password 
-  - Google auth 
-  - JWT tokens
-- Python package
-  - Fastapi (requests and )
-- Database
-   - Postgresql
-- 
-
-## Naming convention
-- methods
-    - snake_case
-- class 
-    - UpperCase (MyClass)
-- variables 
-    - snake_case
-- files
-    - snake_case
+3. Run the main server entrypoint
+```bash
+uvicorn backend.main:app --reload
+```
 
 
-## DATABASE
-
-table users:
-
-id auto increment;
-full_name text;
-email text;
-password encrypted;
-
-
-table shortlinks:
-uid;
-old_link text;
-new_link text;
-
-table summerization
-uid;
-summerization blob;
-isPrivate boolean;
-
-Everything but register gets the x-api-key
-API key same as postgresql 
-
-GET
-
-- /summerization
-    - Gets
-      - Link
-    - Returns
-      - Summerization
-- /shorten 
-    - Gets
-      - Link
-    - Returns
-      - New link
-POST
-- 
-- /auth/login
-   - username
-   - password
-- /auth/register
-   - email
-   - password
-   - full_name
-- 
-
-DELETE 
-
-UPDATE
-
-
+<!-- todo: setup local database?? -->

@@ -1,54 +1,44 @@
-from backend.models import Register, Login, Summerize
-from backend.main import app
+from fastapi import APIRouter, Depends
+from auth import api_key_auth
+from summerize import summerize_from_article, summerize_from_video
+from models import Login, Register, Summerize
+from fastapi.middleware.cors import CORSMiddleware
+from auth import google, google_callback, login, register
 
 
-"""
-Index route just returns a string for testing if the server is running
-"""
-@app.get("/")
-def index():
-    return "<h1>Index Page</h1>"
 
-"""
-Google oauth authentication
-"""
-@app.get("/auth/google")
-def google():
-    return "<h1>Google auth</h1>"
+class Routes:
+    def __init__(self):
+        self.router = APIRouter()
+        self.router.add_api_route("/google", self.google_route, methods=["GET"])
+        self.router.add_api_route("/google/callback", self.google_callback_route, methods=["GET"])
+        self.router.add_api_route("/register", self.register_route, methods=["POST"])
+        self.router.add_api_route("/login", self.login_route, methods=["POST"])
+        self.router.add_api_route("/summerize/article", self.summerize_article_route, methods=["POST"], dependencies=[Depends(api_key_auth)])
+        self.router.add_api_route("/summerize/video", self.summerize_video_route, methods=["POST"], dependencies=[Depends(api_key_auth)])
+        self.router.add_api_route("/shorten", self.shorten_route, methods=["POST"], dependencies=[Depends(api_key_auth)])
+        pass
+    def get_router(self):
+        return self.router
+    def google_route(self):
+        return google()
+    def google_callback_route(self):
+        return google_callback()
+    
+    def register_route(self, form_data: Register):
+        return register(form_data.email, form_data.password, form_data.full_name)
+    def login_route(self, form_data: Login):
+        print(form_data)
+        return login(form_data.email, form_data.password)
+    
 
-"""
-Google oauth callback
-"""
-@app.get("/auth/google/callback")
-def google_callback():
-    return "<h1>Google auth callback</h1>"
-
-
-"""
-Register route takes in a form of email, password, and full name
-"""
-@app.post("/auth/register")
-def register(form_data: Register):
-    return f'<h1>Register Page {form_data.password} {form_data.email} {form_data.full_name}</h1>'
-
-"""
-Login route takes in a form of email and password
-"""
-@app.post("/auth/login")
-def login(form_data: Login):
-    return f'<h1>Login Page {form_data.password} {form_data.email}</h1>'
-
-"""
-Given a url, return a summary of the article
-"""
-@app.post("/summarize")
-def summerize(form_data: Summerize):
-    return f"<h1>Summerize Page {form_data.url} </h1>"
+    def shorten_route(self, form_data: Summerize):
+        return f'<h1>Shorten Page</h1>'
 
 
-"""
-Given a url, return a shortened url
-"""
-@app.post("/shorten")
-def shorten(form_data: Summerize):
-    return f"<h1>Shorten Page {form_data.url} </h1>"
+    def summerize_article_route(self, form_data: Summerize):
+        return summerize_from_article(form_data.url)
+    def summerize_video_route(self, form_data: Summerize):
+        return summerize_from_video(form_data.url)
+
+

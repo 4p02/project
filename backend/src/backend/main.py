@@ -1,24 +1,22 @@
 import fastapi
 from fastapi.middleware.cors import CORSMiddleware
+from models import Login, Register, Summerize
+from routes import Routes
+from auth import google, google_callback, register, login
+from constants import HOST, PORT
 import uvicorn
 
-import backend.routes
 
-app = fastapi.FastAPI()
+
+
+
 
 def main():
     try:
-        # temporary helps with CORS
-        app.add_middleware(
-            CORSMiddleware(
-                app,
-                allow_origins=["*"],
-                allow_credentials=True,
-                allow_methods=["*"],
-                allow_headers=["*"],
-            )
-        )
-        uvicorn.run(app, host="0.0.0.0", port=8000)
+        app = fastapi.FastAPI()
+        router: fastapi.APIRouter = Routes().get_router()
+        app.include_router(router)
+        uvicorn.run(app, host=HOST, port=PORT)
 
     except Exception as e:
         print(e)

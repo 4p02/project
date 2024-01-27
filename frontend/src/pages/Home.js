@@ -2,6 +2,8 @@ import toast from "react-hot-toast";
 import SearchBar from "../components/SearchBar.js";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import LoadingScreen from "./Loading.js";
+import {LinearGradient} from 'react-text-gradients';
 
 const Home = () => {
   const [inputURLValue, setInputURLValue] = useState("");
@@ -31,7 +33,11 @@ const Home = () => {
 
   return (
     <div className="page">
-      <label className="text-[54px] font-[600] mt-auto">This is our temporary home(page) 🏠🧡</label>
+      <h1>
+          <LinearGradient style={{fontSize: 30}} gradient={['to right', '#FF9124, #CCA1CF']}>
+            Temporary
+          </LinearGradient>
+    </h1>
       <label className="text-[36px] font-[600] mb-20">Search something up!</label>
       
       <SearchBar

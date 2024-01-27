@@ -1,0 +1,44 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .page {
+    @apply
+    pt-16 /* MAKE SURE IT IS SAME AS NAVBARS HEIGHT! */
+    pb-8
+    flex
+    flex-col
+    items-center
+    content-center
+    h-full
+  }
+
+  .nav-text-btn {
+    @apply
+    font-[600]
+    text-[24px]
+    hover:text-accent
+  }
+
+  .nav-text-btn-divider {
+    @apply
+    w-[2px]
+    h-1/2
+    bg-divider
+    rounded-lg
+  }
+
+	body {
+		@apply
+    p-0
+    font-poppins
+		bg-[url("./assets/endless-constellation.svg")]
+		/* background by SVGBackgrounds.com */
+		bg-fixed
+		bg-center
+		text-white
+    overflow-x-hidden
+		;
+	}
+}

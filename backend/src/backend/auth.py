@@ -1,14 +1,14 @@
 from fastapi import Depends
 import jwt
 import time
-from constants import SECRET_KEY
+from constants import SECRET_KEY, NUMBER_OF_DAYS_TO_EXPIRE
 from datetime import datetime, timedelta
 
 
 def create_jwt_token(user_id: str) -> str:
     payload = {
         'user_id': user_id,
-        'exp': datetime.utcnow() + timedelta(days=1),
+        'exp': datetime.utcnow() + timedelta(days=NUMBER_OF_DAYS_TO_EXPIRE),
         'iat': datetime.utcnow()
     }
     return jwt.encode(payload, SECRET_KEY, algorithm='HS256')
@@ -24,15 +24,18 @@ def decode_jwt_token(token: str) -> dict:
 
 
 def api_key_auth(api_key):
+    # decoded_token = decode_jwt_token(api_key)
+    # if decoded_token is None:
+    #     return False
     return True
 
 
 def register(email: str, password: str, full_name: str) -> bool:
-    return f'<h1>Register Page {password} {email} {full_name}</h1>'
+    return {"data": "true"} 
 
 
 def login(email: str, password: str) -> bool:
-    return f'<h1>Login Page {password} {email}</h1>'
+    return {"data": "true"}
 
 
 

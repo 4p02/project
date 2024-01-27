@@ -19,6 +19,7 @@ def main():
         uvicorn.run(app, host=HOST, port=PORT)
 
     except Exception as e:
+        
         print(e)
 
 

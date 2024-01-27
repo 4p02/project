@@ -2,9 +2,12 @@ import toast from "react-hot-toast";
 import { TiThMenuOutline, TiHome } from "react-icons/ti";
 import { useNavigate, useLocation } from "react-router-dom";
 import logo from "../../assets/templogo.png"
+import { useContext } from "react";
+import { GlobalContext } from "../context/GlobalContext";
 
 const Navbar = () => {
   const navigate = useNavigate();
+  const context = useContext(GlobalContext)
   const { pathname } = useLocation();
   const onMenuClick = () => toast.error("Not a thing yet!")
   const onLogInClick = () => navigate("/login");
@@ -27,10 +30,20 @@ const Navbar = () => {
 
         {/* Vertical Divider */}
         <div className="nav-text-btn-divider"></div>
-
-        <button className={`nav-text-btn ${pathname === "/login" && "text-accent"}`} onClick={onLogInClick}>
-          Log In/Register
-        </button>
+        {
+          context.token ? ( 
+            <>
+            <p>{context.full_name ? context.full_name : "unknown"}</p>
+            </>
+          ) : (
+            <>
+            <button className={`nav-text-btn ${pathname === "/login" && "text-accent"}`} onClick={onLogInClick}>
+              Log In/Register
+            </button>
+            </>
+          )
+        }
+        
 
         {/* WILL BE ADDED WITH MOBILE VIEW STAGE */}
         {/* Vertical Divider */}

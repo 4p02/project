@@ -20,7 +20,7 @@ host = "localhost:5432"
 
 user = "backend"
 password = "yoursupersecretpassword"
-database = "public"
+dbname = "public"
 
 [ollama]
 endpoint = "http://localhost:11434/"

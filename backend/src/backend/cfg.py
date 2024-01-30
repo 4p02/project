@@ -80,7 +80,7 @@ class Config():
         host=str,
         user=NotRequired[Optional[str]],
         password=NotRequired[Optional[str]],
-        database=str,
+        dbname=str,
     )
 
     ollama: TypedDict("",

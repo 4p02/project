@@ -1,3 +1,5 @@
+"""Configuration and logging setup."""
+
 from copy import copy
 import io
 import logging

@@ -1,14 +1,11 @@
 import fastapi
 from fastapi.middleware.cors import CORSMiddleware
-from models import Login, Register, Summarize
-from routes import Routes
-from auth import google, google_callback, register, login
-from constants import HOST, PORT
 import uvicorn
 
-
-
-
+from auth import google, google_callback, register, login
+from models import Login, Register, Summarize
+from routes import Routes
+from backend import config
 
 
 def main():
@@ -16,8 +13,7 @@ def main():
         app = fastapi.FastAPI()
         router: fastapi.APIRouter = Routes().get_router()
         app.include_router(router)
-        uvicorn.run(app, host=HOST, port=PORT)
-
+        uvicorn.run(app, host=config.api.host, port=config.api.port)
     except Exception as e:
         print(e)
 

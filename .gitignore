@@ -10,6 +10,10 @@ __pycache__/
 .pytest_cache/
 .mypy_cache/
 
+# config files
+# do not commit! instead, commit config.default and use config.toml for local
+config.toml
+
 # mac os garbage
 .DS_Store
 .AppleDouble

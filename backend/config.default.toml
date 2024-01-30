@@ -1,0 +1,28 @@
+# Copy this file to .env and update with any respective secrets
+# Don't track important secrets in git!
+
+
+# randomize this string for you configuration!
+# generate with:
+# import random
+# import string
+# "".join(random.choices(string.ascii_letters + string.digits, k=100))
+jwt_secret = "gbjNBlAIE0t6vrTNBTKDJsH0waPaLz5VBEGO5EUT60r5Z1ZDJ3e9goaycBxU6w1rYjAdSm0lhljbxtllHpVXfQd2nO5cYUzEdB1C"
+
+[api]
+host = "0.0.0.0"
+port = 8000
+
+[db]
+# if using postgres over tcp:
+host = "localhost:5432"
+# if using postgres over a domain socket:
+# host = "/var/run/postgresql/"
+
+user = "backend"
+password = "yoursupersecretpassword"
+database = "public"
+
+[ollama]
+endpoint = "http://localhost:11434/"
+model = "mistral:7b-instruct-v0.2-q4_K_M"

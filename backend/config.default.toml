@@ -1,6 +1,5 @@
-# Copy this file to .env and update with any respective secrets
-# Don't track important secrets in git!
-
+log_target = "stderr"
+log_level = "info"
 
 # randomize this string for you configuration!
 # generate with:
@@ -11,7 +10,7 @@ jwt_secret = "KrTidID0s8udOPENmXGCbZRieeYy5QR5yiEKKeZYTuNqTzQRqSNcj5DhY2kCAqgmVi
 
 [api]
 host = "0.0.0.0"
-port = 8000
+port = 8080
 
 [db]
 # if using postgres over tcp:

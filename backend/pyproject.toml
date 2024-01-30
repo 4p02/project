@@ -2,7 +2,8 @@
 name = "backend"
 version = "0.1.0"
 description = "web summarizer for 4p02"
-requires-python = ">=3.8"
+# 3.10 introduces match/case
+requires-python = ">=3.10"
 # readme = "README.md"
 # license = {file = "LICENSE"}
 

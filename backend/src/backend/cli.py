@@ -1,3 +1,7 @@
+"""CLI tools for setting up config and performing database migrations.
+
+Installed on your path with installation of the package."""
+
 from os import path
 import io
 import random

@@ -30,3 +30,6 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
+# config files
+# do not commit! instead, commit config.default and use config.toml for local
+config.toml

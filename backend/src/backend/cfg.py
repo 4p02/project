@@ -78,7 +78,7 @@ class Config():
 
     db: TypedDict("db",
         host=str,
-        user=str,
+        user=NotRequired[Optional[str]],
         password=NotRequired[Optional[str]],
         database=str,
     )

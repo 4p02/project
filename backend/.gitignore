@@ -1,0 +1,14 @@
+# python venv and package building shit
+venv/
+.venv/
+env/
+venv/
+build
+*.egg-info
+__pycache__/
+.pytest_cache/
+.mypy_cache/
+
+# config files
+# do not commit! instead, commit config.default and use config.toml for local
+config.toml

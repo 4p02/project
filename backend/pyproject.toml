@@ -17,5 +17,6 @@ dependencies = [
 ]
 
 [project.scripts]
-backend = "backend:main"
+backend = "backend.main:main"
 backend-setupcfg = "backend.cli:setup_cfg"
+backend-migrate = "backend.cli:migrate_db"

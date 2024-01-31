@@ -2,14 +2,15 @@
 
 Installed on your path with installation of the package."""
 
-from os import path
+import glob
 import io
+from os import path
 import random
 import re
 import shutil
 import string
 
-from backend import MODULE_ROOT
+from backend import MODULE_ROOT, logger, config
 import backend.cfg
 
 
@@ -38,3 +39,41 @@ def setup_cfg():
         file.write(toml)
 
     logger.info(f"generated config.toml")
+
+
+def migrate_db():
+    MIGRATIONS_ROOT = path.join(MODULE_ROOT, "db")
+    migrations = glob.glob(
+        "**/*.sql", root_dir=MIGRATIONS_ROOT,
+        include_hidden=False,
+        recursive=True
+    )
+    migrations.sort()
+    logger.info(f"found {len(migrations)} migrations")
+    logger.info(f"current tracked migration: {config.db.current_migration or 'none'}")
+
+    with io.open(path.join(MODULE_ROOT, "config.toml"), "r+") as config_file:
+        migrations_applied = 0
+        for migration_path in filter(lambda path: path > config.db.current_migration, migrations):
+            logger.info(f"applying migration: {migration_path}")
+            with io.open(path.join(MIGRATIONS_ROOT, migration_path), "r") as migration:
+                # todo: apply migration
+                pass
+
+            config.db.current_migration = migration_path
+
+            config_file.seek(0)
+            new_toml = re.sub(
+                pattern=r"""current_migration\s*=\s*["'].*?["'].*?""",
+                repl=f"current_migration = \"{config.db.current_migration}\"",
+                string=config_file.read()
+            )
+            config_file.seek(0)
+            config_file.write(new_toml)
+            config_file.truncate()
+            migrations_applied += 1
+
+    if migrations_applied == 0:
+        logger.info(f"no migrations to apply; nothing to do")
+    else:
+        logger.info(f"{migrations_applied} migrations applied; now at tracking: {config.db.current_migration or 'none'}")

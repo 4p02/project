@@ -81,6 +81,7 @@ class Config():
         user=NotRequired[Optional[str]],
         password=NotRequired[Optional[str]],
         dbname=str,
+        current_migration=str,
     )
 
     ollama: TypedDict("",

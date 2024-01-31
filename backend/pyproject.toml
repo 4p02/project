@@ -2,10 +2,11 @@
 name = "backend"
 version = "0.1.0"
 description = "web summarizer for 4p02"
-# 3.10 introduces match/case
-requires-python = ">=3.10"
-# readme = "README.md"
-# license = {file = "LICENSE"}
+
+# 3.10 for match/case, 3.11 for tomllib builtin
+requires-python = ">=3.11"
+
+readme = "README.md"
 
 dependencies = [
     "fastapi~=0.109",

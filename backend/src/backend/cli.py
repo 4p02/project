@@ -15,7 +15,7 @@ import backend.cfg
 
 def setup_cfg():
     if path.isfile(path.join(MODULE_ROOT, "config.toml")):
-        # maybe log or smth idk
+        logger.warning(f"config.toml already exists; not overwriting")
         return
 
     shutil.copy(
@@ -29,10 +29,12 @@ def setup_cfg():
         toml = file.read()
 
         toml = re.sub(
-            pattern="jwt_secret = \".*?\".*?",
+            pattern=r"""jwt_secret\s*=\s*["'].*?["'].*""",
             repl=f"jwt_secret = \"{jwt_secret}\"",
             string=toml
         )
 
         file.seek(0)
         file.write(toml)
+
+    logger.info(f"generated config.toml")

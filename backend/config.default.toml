@@ -21,6 +21,7 @@ host = "localhost:5432"
 user = "backend"
 password = "yoursupersecretpassword"
 dbname = "public"
+current_migration = ""
 
 [ollama]
 endpoint = "http://localhost:11434/"

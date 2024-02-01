@@ -19,7 +19,8 @@ dependencies = [
 
 [build-system]
 # setuptools 61 needed needed for tool.setuptools.package-data support
-requires = ["setuptools ~= 61.0"]
+# setuptools 64 needed for editable install support
+requires = ["setuptools >= 64.0"]
 
 [tool.setuptools.package-data]
 backend = ["*.toml"]

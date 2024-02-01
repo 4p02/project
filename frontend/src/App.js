@@ -10,20 +10,24 @@ import {
 } from "./pages";
 import Navbar from "./components/nav/Navbar.js";
 import Footer from "./components/footer/Footer.js";
+import GlobalContextProvider from "./components/context/GlobalContext.jsx";
 
 function App() {
+  
   return (
     <main className="w-screen h-screen text-black">
-      <Navbar />
-      <Toaster />
-      <Routes>
-        <Route path="/" element={<Home/>} />
-        <Route path="/auth" element={<Auth/>} />
-        <Route path="/history" element={<History/>} />
-        <Route path="/landing" element={<Landing/>} />
-        <Route path="/get-started" element={<GetStarted/>} />
-        <Route path="/*" element={<NotFound/>} />
-      </Routes>
+      <GlobalContextProvider> 
+        <Navbar />
+        <Toaster />
+        <Routes>
+          <Route path="/" element={<Home/>} />
+          <Route path="/auth" element={<Auth/>} />
+          <Route path="/history" element={<History/>} />
+          <Route path="/landing" element={<Landing/>} />
+          <Route path="/get-started" element={<GetStarted/>} />
+          <Route path="/*" element={<NotFound/>} />
+        </Routes>
+      </GlobalContextProvider>
       <Footer />
     </main>
   );

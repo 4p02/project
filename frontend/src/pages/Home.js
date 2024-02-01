@@ -4,6 +4,8 @@ import { useState } from "react";
 import { FaCopy } from "react-icons/fa";
 import { motion } from "framer-motion"
 import FormButton from "../components/auth/FormButton.js";
+// import LoadingScreen from "./Loading.js";
+import {LinearGradient} from 'react-text-gradients';
 
 const Home = () => {
   const [inputURLValue, setInputURLValue] = useState("");
@@ -36,6 +38,10 @@ const Home = () => {
 
   return (
     <div className="page !flex-row p-20 space-x-16">
+      {/* <LinearGradient style={{fontSize: 30}} gradient={['to right', '#FF9124, #CCA1CF']}>
+        Temporary
+      </LinearGradient> */}
+
       {/* Left section */}
       <div className="h-full flex flex-col w-1/2">
         <h1 className="title">Simplify Your Links</h1>

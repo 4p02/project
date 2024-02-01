@@ -2,10 +2,12 @@
 import { TiThMenuOutline, TiHome } from "react-icons/ti";
 import { useNavigate, useLocation } from "react-router-dom";
 import logo from "../../assets/templogo.png"
-import { useEffect } from "react";
+import { useContext, useEffect } from "react";
+import { GlobalContext } from "../context/GlobalContext";
 
 const Navbar = () => {
   const navigate = useNavigate();
+  const context = useContext(GlobalContext)
   const { pathname } = useLocation();
   // const onMenuClick = () => toast.error("Not a thing yet!")
   const onLogInClick = () => navigate("/auth");
@@ -50,9 +52,13 @@ const Navbar = () => {
         {/* Vertical Divider */}
         <div className="nav-text-btn-divider"></div>
 
-        <button className={`nav-text-btn ${pathname === "/auth" && "underline"}`} onClick={onLogInClick}>
-          Log In/Register
-        </button>
+        {context.token ? 
+          <p>{context.full_name ? context.full_name : "unknown"}</p>
+        :
+          <button className={`nav-text-btn ${pathname === "/auth" && "underline"}`} onClick={onLogInClick}>
+            Log In/Register
+          </button>
+        }
 
         {/* WILL BE ADDED WITH MOBILE VIEW STAGE */}
         {/* Vertical Divider */}

@@ -6,6 +6,7 @@ from auth import google, google_callback, register, login
 from models import Login, Register, Summarize
 from routes import Routes
 from backend import config, logger
+from starlette.middleware.sessions import SessionMiddleware
 
 
 def main():
@@ -15,6 +16,7 @@ def main():
         app = fastapi.FastAPI()
         router: fastapi.APIRouter = Routes().get_router()
         app.include_router(router)
+        app.add_middleware(SessionMiddleware, secret_key=config.jwt_secret)
         uvicorn.run(
             app=app,
             host=config.api.host,

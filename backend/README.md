@@ -68,12 +68,15 @@ sudo -u postgres createdb -O $USERNAME public
 
 Edit [`config.toml`](./config.toml) and change the fields under the `[db]` section to include the username, and database set above. If you installed postgres from a package and it is using a domain socket, change the `host` field to the directory containing the socket.
 
-<!-- todo: finish this -->
-<!-- todo: setup local database?? -->
-
 ## Running the Server
 
 Run the main server entrypoint
 ```bash
 python src/backend/main.py
 ```
+## Setup oauth
+
+Find the `/etc/hosts` file on the system and add the following line:
+`127.0.0.1 simplify.com`
+
+Then email jonathan to add ur gmail to the google oauth client list.

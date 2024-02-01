@@ -71,6 +71,10 @@ class Config():
     log_target: Literal["stderr", "syslog"]
     jwt_secret: str
     jwt_expiry_days: int
+    google_client_id: str
+    google_client_secret: str
+    google_callback_uri: str
+
 
     api: TypedDict("api",
         host=str,

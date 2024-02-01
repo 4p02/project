@@ -8,6 +8,9 @@ log_level = "info"
 # "".join(random.choices(string.ascii_letters + string.digits, k=100))
 jwt_secret = "KrTidID0s8udOPENmXGCbZRieeYy5QR5yiEKKeZYTuNqTzQRqSNcj5DhY2kCAqgmViw8YsNFGP826vIY5kB0XvgYaGvnS3dpEi6mQmaEL1DoV4tSKNEiKNn1dqcxrBiu"
 jwt_expiry_days = 7
+google_client_id = "670389606214-ue7v08b9n22ok3v5bnjq59pvrlfcsk3a.apps.googleusercontent.com"
+google_client_secret = "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"
+google_callback_uri = "http://simplify.com:8080/google/callback"
 
 [api]
 host = "0.0.0.0"

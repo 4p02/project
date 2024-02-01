@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Request
 from auth import api_key_auth
 from summarize import summarize_from_article, summarize_from_video
 from models import Login, Register, Summarize
@@ -22,10 +22,10 @@ class Routes:
 
     def get_router(self):
         return self.router
-    def google_route(self):
-        return google()
-    def google_callback_route(self):
-        return google_callback()
+    def google_route(self, request: Request):
+        return google(request=request)
+    def google_callback_route(self, request: Request):
+        return google_callback(request=request)
 
     def register_route(self, form_data: Register):
         return register(form_data.email, form_data.password, form_data.full_name)

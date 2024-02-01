@@ -1,13 +1,25 @@
 import time
 from datetime import datetime, timedelta
+from authlib.integrations.starlette_client import OAuth
+from authlib.integrations.starlette_client import OAuthError
 
-from fastapi import Depends
+from fastapi import Depends, Request
 import jwt
 import time
 
 from backend import config
 from datetime import datetime, timedelta
+from starlette.config import Config
 
+# Set up OAuth
+config_data = {'GOOGLE_CLIENT_ID': config.google_client_id, 'GOOGLE_CLIENT_SECRET': config.google_client_secret}
+starlette_config = Config(environ=config_data)
+oauth = OAuth(starlette_config)
+oauth.register(
+    name='google',
+    server_metadata_url='https://accounts.google.com/.well-known/openid-configuration',
+    client_kwargs={'scope': 'openid email profile'},
+)
 
 
 def create_jwt_token(user_id: str) -> str:
@@ -43,9 +55,32 @@ def login(email: str, password: str) -> bool:
     return {"data": "true"}
 
 
+async def google(request: Request):
+    return await oauth.google.authorize_redirect(request, config.google_callback_uri)
 
-def google():
-    return f'<h1>Google Page</h1>'
 
-def google_callback():
-    return f'<h1>Google Callback Page</h1>'
+"""
+
+TODO
+    validate email in database and generate JWT token
+    return the JWT token to the user 
+Handle google oauth callback 
+@param request: Request
+@return: dict with jwt token 
+"""
+async def google_callback(request:Request):
+    try:
+        access_token = await oauth.google.authorize_access_token(request)
+    except OAuthError:
+        raise "Oauth in da house"
+    token_expiry = access_token['expires_at']
+    user_stuff = access_token['userinfo']
+    profile_picture = user_stuff['picture']
+    given_name = user_stuff['given_name']
+    family_name = user_stuff['family_name']
+    email = user_stuff['email']
+    print(token_expiry, profile_picture, given_name, family_name, email, "expire")
+    token_jwt = "123"
+    return {'result': True, 'access_token': token_jwt}
+
+

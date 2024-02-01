@@ -2,7 +2,8 @@
 import { TiThMenuOutline, TiHome } from "react-icons/ti";
 import { useNavigate, useLocation } from "react-router-dom";
 import logo from "../../assets/templogo.png"
-import { useEffect } from "react";
+import { useContext, useEffect } from "react";
+import { GlobalContext } from "../context/GlobalContext";
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -20,7 +21,7 @@ const Navbar = () => {
     // Indicae user has already visited once before if they are on the landing pages
     if (landingRoutes.findIndex(route => route === pathname) !== -1)
       localStorage.setItem("FIRST_VISIT", "true");
-
+    
     // If the user hasn't visited once before, redirect to landing page
     if (!localStorage.getItem("FIRST_VISIT"))
       navigate("/landing");
@@ -51,9 +52,13 @@ const Navbar = () => {
         {/* Vertical Divider */}
         <div className="nav-text-btn-divider"></div>
 
-        <button className={`nav-text-btn ${pathname === "/auth" && "underline"}`} onClick={onLogInClick}>
-          Log In/Register
-        </button>
+        {context.token ? 
+          <p>{context.full_name ? context.full_name : "unknown"}</p>
+        :
+          <button className={`nav-text-btn ${pathname === "/auth" && "underline"}`} onClick={onLogInClick}>
+            Log In/Register
+          </button>
+        }
 
         {/* WILL BE ADDED WITH MOBILE VIEW STAGE */}
         {/* Vertical Divider */}

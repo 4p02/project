@@ -15,11 +15,11 @@ class Routes:
         self.router.add_api_route("/register", self.register_route, methods=["POST"])
         self.router.add_api_route("/login", self.login_route, methods=["POST"])
         self.router.add_api_route("/get_new_token", self.get_new_token_route, methods=["POST"])
-        self.router.add_api_route("/summerize/article", self.summerize_article_route, methods=["POST"], dependencies=[Depends(api_key_auth)])
-        self.router.add_api_route("/summerize/video", self.summerize_video_route, methods=["POST"], dependencies=[Depends(api_key_auth)])
+        self.router.add_api_route("/summarize/article", self.summarize_article_route, methods=["POST"], dependencies=[Depends(api_key_auth)])
+        self.router.add_api_route("/summarize/video", self.summarize_video_route, methods=["POST"], dependencies=[Depends(api_key_auth)])
         self.router.add_api_route("/shorten", self.shorten_route, methods=["POST"], dependencies=[Depends(api_key_auth)])
         self.router.add_api_route("/history", self.get_history_route, methods=["GET"], dependencies=[Depends(api_key_auth)])
-        pass
+
     def get_router(self):
         return self.router
     def google_route(self):
@@ -45,7 +45,7 @@ class Routes:
 
 
 
-    def summerize_article_route(self, form_data: Summerize):
-        return summerize_from_article(form_data.url)
-    def summerize_video_route(self, form_data: Summerize):
-        return summerize_from_video(form_data.url)
+    def summarize_article_route(self, form_data: Summarize):
+        return summarize_from_article(form_data.url)
+    def summarize_video_route(self, form_data: Summarize):
+        return summarize_from_video(form_data.url)

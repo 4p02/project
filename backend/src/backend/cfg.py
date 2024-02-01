@@ -70,6 +70,7 @@ class Config():
     log_level: Union[int, Literal['debug', 'info', 'warning', 'error', 'critical']]
     log_target: Literal["stderr", "syslog"]
     jwt_secret: str
+    jwt_expiry_days: int
 
     api: TypedDict("api",
         host=str,

@@ -1,12 +1,27 @@
 import toast from "react-hot-toast";
-import SearchBar from "../components/SearchBar.js";
+import Input from "../components/Input.js";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { FaCopy } from "react-icons/fa";
+import { motion } from "framer-motion"
+import FormButton from "../components/auth/FormButton.js";
 
 const Home = () => {
   const [inputURLValue, setInputURLValue] = useState("");
-  const navigate = useNavigate();
+  const [url, setURL] = useState("");
+  const [summary, setSummary] = useState("");
 
+  const onLinkCopy = () => {
+    if (!url.trim()) { toast.error("There's nothing to copy!"); return; }
+    navigator.clipboard.writeText(url);
+    toast("Copied link to clipboard!", { icon: "📋" });
+  }
+
+  const onSummaryCopy = () => {
+    if (!summary.trim()) { toast.error("There's nothing to copy!"); return; }
+    navigator.clipboard.writeText(summary);
+    toast("Copied summary to clipboard!", { icon: "📋" });
+  }
+  
   const onSummarizeClick = () => {
     // Invalid URL entered, indicate so and return
     if (!inputURLValue.trim()) {
@@ -17,34 +32,55 @@ const Home = () => {
     // Send POST request to backend here
     // When response recieved, redirect to summarize page
       // Include data recieved back in query when redirecting
-
-    navigate("/summary", {
-      state: {
-        url: "/login",
-        summary: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Eleifend quam adipiscing vitae proin sagittis nisl rhoncus. Sed libero enim sed faucibus turpis in. Rhoncus mattis rhoncus urna neque viverra justo nec ultrices. Diam donec adipiscing tristique risus nec feugiat in. Ultrices mi tempus imperdiet nulla malesuada pellentesque elit eget gravida. Id volutpat lacus laoreet non curabitur gravida arcu ac. Tellus cras adipiscing enim eu turpis. Risus quis varius quam quisque id. Platea dictumst quisque sagittis purus sit amet volutpat consequat mauris. Libero id faucibus nisl tincidunt eget nullam non. In dictum non consectetur a erat. Fringilla est ullamcorper eget nulla facilisi etiam dignissim diam quis. Lectus urna duis convallis convallis tellus id. Sed turpis tincidunt id aliquet risus feugiat in. Ac turpis egestas sed tempus. Felis bibendum ut tristique et egestas quis. In hac habitasse platea dictumst quisque sagittis purus."
-      }
-    });
-
-    // Temp for now
-    toast(inputURLValue);
   }
 
   return (
-    <div className="page">
-      <label className="text-[54px] font-[600] mt-auto">This is our temporary home(page) 🏠🧡</label>
-      <label className="text-[36px] font-[600] mb-20">Search something up!</label>
+    <div className="page !flex-row p-20 space-x-16">
+      {/* Left section */}
+      <div className="h-full flex flex-col w-1/2">
+        <h1 className="title">Simplify Your Links</h1>
+        <p className="subtitle text-[20px] mb-5">Enter the URL you want to summarize and shorten below. Simplify will generate a short link and a concise summary for you.</p>
+        <Input
+          onEnter={onSummarizeClick}
+          onChange={(event) => setInputURLValue(event.target.value)}
+          value={inputURLValue}
+          width="w-full"
+          type="search"
+          placeholder="Enter a URL..."
+        />
+        <FormButton
+          onClick={onSummarizeClick}
+          text="Submit"
+          extraClassName="mt-6 mb-3"
+        />
+        <h1 className="title mt-auto">Short Link</h1>
+        <div className="mb-auto panel justify-between py-3 h-16 px-4 flex items-center">
+          {url ?
+            <p className="text-[16px]">{url}</p>
+          :
+            <p className="text-[16px] text-gray-400">Shortened link will appear here!</p>
+          }
+          
+          <motion.button whileHover={{ scale: 1.2 }} className="text-[24px]" onClick={onLinkCopy}>
+            <FaCopy />
+          </motion.button>
+        </div>
+      </div>
       
-      <SearchBar
-        onChange={(e) => setInputURLValue(e.target.value)} value={inputURLValue}
-        onEnter={onSummarizeClick}
-        width="w-1/2"
-      />
-      <button
-        onClick={onSummarizeClick}
-        className="bg-accent text-white mb-auto text-[32px] mt-8 px-8 py-2 rounded-xl"
-      >
-        Summarize!
-      </button>
+      {/* Right section */}
+      <div className="h-full flex flex-col w-1/2">
+      <h1 className="title">Summary</h1>
+      <div className="panel h-full relative py-6 px-6">
+        {summary ?
+          <p className="text-[16px]">{summary}</p>
+        :
+          <p className="text-[16px] text-gray-400">Summary will appear here!</p>
+        }
+        <motion.button whileHover={{ scale: 1.2 }} className="text-[24px] absolute top-2 right-2" onClick={onSummaryCopy}>
+          <FaCopy />
+        </motion.button>
+      </div>
+      </div>
     </div>
   )
 }

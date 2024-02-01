@@ -18,22 +18,67 @@
     @apply
     font-[600]
     text-[24px]
-    hover:text-accent
+    hover:underline
   }
 
   .nav-text-btn-divider {
     @apply
     w-[2px]
     h-1/2
-    bg-divider
+    bg-[#D1D5DB]
     rounded-lg
+  }
+
+  .btn {
+    @apply
+    rounded-xl
+    py-3
+    px-0
+    text-center
+    text-[24px]
+    font-bold
+    h-fit
+    bg-black
+    text-white
+  }
+  
+  .btn-secondary {
+    @apply
+    btn
+    border-2
+    border-black
+    bg-white
+    text-black
+  }
+
+  .title {
+    @apply
+    text-[4.5rem]
+    font-bold
+    text-[#191919]
+  }
+
+  .subtitle {
+    @apply
+    text-[24px]
+    text-gray-500
+  }
+
+  .panel {
+    @apply
+    /* border-2
+    bg-gray-100
+    border-gray-400 */
+    bg-[#F8F8F8]
+    shadow-lg
+    rounded-2xl
   }
 
 	body {
 		@apply
     p-0
     font-poppins
-		bg-[url("./assets/endless-constellation.svg")]
+		/* bg-[url("./assets/endless-constellation.svg")] */
 		/* background by SVGBackgrounds.com */
 		bg-fixed
 		bg-center

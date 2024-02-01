@@ -1,7 +1,6 @@
 import Input from "../Input.js"
 import { useState } from "react"
 import { useNavigate } from "react-router-dom";
-import { motion } from "framer-motion"
 import FormButton from "./FormButton.js";
 
 const LoginView = ({ viewToggle }) => {

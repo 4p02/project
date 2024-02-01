@@ -8,6 +8,7 @@ import jwt
 from backend import config
 
 
+
 def create_jwt_token(user_id: str) -> str:
     payload = {
         'user_id': user_id,

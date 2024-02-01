@@ -6,7 +6,6 @@ import jwt
 import time
 
 from backend import config
-from constants import NUMBER_OF_DAYS_TO_EXPIRE
 from datetime import datetime, timedelta
 
 

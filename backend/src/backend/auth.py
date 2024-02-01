@@ -10,6 +10,7 @@ from constants import NUMBER_OF_DAYS_TO_EXPIRE
 from datetime import datetime, timedelta
 
 
+
 def create_jwt_token(user_id: str) -> str:
     payload = {
         'user_id': user_id,

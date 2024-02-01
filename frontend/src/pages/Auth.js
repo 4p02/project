@@ -20,7 +20,6 @@ const Auth = () => {
 
   return (
     <div className="page !pt-2 justify-center">
-
       <h1 className="title !text-[64px]">
         {loginPageOrRegister ?
           "Log into Your Account"
@@ -29,7 +28,7 @@ const Auth = () => {
         }
       </h1>
       
-      {isLogin ?
+      {loginPageOrRegister ?
         <LoginView viewToggle={toggleView} />
       :
         <RegisterView viewToggle={toggleView} />

@@ -28,6 +28,10 @@ class Database:
     def login_user(self):
         # TODO
         self.connection.commit()
+
+    def get_history_route(self):
+        # TODO
+        pass
     
 
 database = Database()

@@ -83,6 +83,7 @@ class Config():
 
     db: TypedDict("db",
         host=str,
+        port=NotRequired[Optional[int]],
         user=NotRequired[Optional[str]],
         password=NotRequired[Optional[str]],
         dbname=str,

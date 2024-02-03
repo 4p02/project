@@ -1,4 +1,6 @@
-Make sure to run `npm install` upon pulling!
+1. Make sure to run `npm install` upon pulling!
+2. Run `npm run start` to launch a web server and open the page in your browser
+
 Added a `npm run clean` script to clean up the node_modules folder and reinstall all dependencies.
 
 ------------------------------------------------

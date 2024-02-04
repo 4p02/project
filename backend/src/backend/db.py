@@ -1,4 +1,4 @@
-import psycopg2
+import psycopg
 
 
 class Database:
@@ -15,7 +15,7 @@ class Database:
     def drop_tables(self):
         # self.cursor.execute(DROP_TABLES_QUERY)
         self.connection.commit()
-    
+
     def add_test_data(self):
         # TODO
         self.connection.commit()
@@ -31,6 +31,6 @@ class Database:
     def get_history_route(self):
         # TODO
         pass
-    
+
 
 database = Database()

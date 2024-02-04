@@ -33,6 +33,7 @@ class Database:
 
         conx_str = conx_str.rstrip()
 
+        logger.debug("connecting to db: " + conx_str)
         return Database(
             await AsyncConnection.connect(
                 conx_str,

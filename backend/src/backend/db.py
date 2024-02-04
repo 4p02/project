@@ -15,7 +15,7 @@ class Database:
         self.conx = conx
 
     @staticmethod
-    async def connect() -> "Database":
+    async def connect() -> Self:
         params = {
             "host": config.db.host,
             "port": config.db.get("port"),
@@ -43,7 +43,7 @@ class Database:
     # to ensure that when the connection is freed, any running transactions are
     # either rolled back or committed and the connection is closed to avoid
     # database inconsistencies or data loss on abnormal exit.
-    async def __aenter__(self):
+    async def __aenter__(self) -> Self:
         self.conx.__aenter__()
         return self
 

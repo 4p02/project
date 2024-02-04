@@ -44,11 +44,11 @@ class Database:
     # either rolled back or committed and the connection is closed to avoid
     # database inconsistencies or data loss on abnormal exit.
     async def __aenter__(self) -> Self:
-        self.conx.__aenter__()
+        await self.conx.__aenter__()
         return self
 
     async def __aexit__(self, *args, **kwargs):
-        self.conx.__aexit__(*args, **kwargs)
+        await self.conx.__aexit__(*args, **kwargs)
         return
 
     def cursor(self) -> AsyncCursor: return self.conx.cursor()

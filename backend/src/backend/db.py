@@ -1,5 +1,6 @@
 import re
 from string import Formatter
+from typing import Self
 
 from psycopg import AsyncConnection, AsyncCursor
 from backend import config, logger

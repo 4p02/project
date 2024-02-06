@@ -19,7 +19,7 @@ const Auth = () => {
   }, [])
 
   return (
-    <div className="page !pt-2 justify-center">
+    <div className="page !pt-10 justify-center">
       <h1 className="title !text-[64px]">
         {loginPageOrRegister ?
           "Log into Your Account"

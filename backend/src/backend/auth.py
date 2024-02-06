@@ -12,7 +12,6 @@ from datetime import datetime, timedelta
 from starlette.config import Config
 
 from db import Database
-database = Database()
 
 
 

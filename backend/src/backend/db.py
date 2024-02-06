@@ -1,6 +1,9 @@
 """Database connection stuff."""
 
+from asyncio import WindowsSelectorEventLoopPolicy
+import asyncio
 import re
+import platform
 from string import Formatter
 from typing import Self
 
@@ -9,6 +12,10 @@ from backend import config, logger
 
 
 _RE_CONX_ESCAPE = re.compile(r"(['\\])")
+
+if platform.system() == 'Windows':
+    # FreeBSD-specific code here...
+    asyncio.set_event_loop_policy(WindowsSelectorEventLoopPolicy())
 
 
 class Database:
@@ -92,7 +99,7 @@ class Database:
             self.cursor.execute(insert_user_query, (full_name, user_name, password))
             self.connection.commit()
             return True  # Return True if registration is successful
-        except psycopg2.Error as e:
+        except psycopg.Error as e:
             print("Error registering user:", e)
             self.connection.rollback()
             return False  # Return False if registration fails
@@ -111,7 +118,7 @@ class Database:
             else:
             # If user doesn't exist or credentials are incorrect, return None
                 return False
-        except psycopg2.Error as e:
+        except psycopg.Error as e:
             print("Error logging in user:", e)
             return False  # Return False if login fails
 

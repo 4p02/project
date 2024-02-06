@@ -25,7 +25,7 @@ oauth.register(
 def create_jwt_token(user_id: str) -> str:
     payload = {
         'user_id': user_id,
-        'exp': datetime.utcnow() + timedelta(days=config.jwt_expiry_days),
+        'exp': datetime.utcnow() + timedelta(days=config.auth.jwt_expiry_days),
         'iat': datetime.utcnow()
     }
     return jwt.encode(payload, config.auth.jwt_secret, algorithm='HS256')

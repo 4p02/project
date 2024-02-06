@@ -20,7 +20,7 @@ async def main():
         app = fastapi.FastAPI()
         router: fastapi.APIRouter = Routes().get_router()
         app.include_router(router)
-        app.add_middleware(SessionMiddleware, secret_key=config.jwt_secret)
+        app.add_middleware(SessionMiddleware, secret_key=config.auth.jwt_secret)
 
         server = uvicorn.Server(
             uvicorn.Config(

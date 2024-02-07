@@ -19,20 +19,22 @@ const Auth = () => {
   }, [])
 
   return (
-    <div className="page !pt-10 justify-center">
-      <h1 className="title !text-[64px]">
+    <div className="page !pt-0">
+      <h1 className="title text-center">
         {loginPageOrRegister ?
-          "Log into Your Account"
+          "Log Into Your Account"
         :
           "Create an Account"
         }
       </h1>
       
-      {loginPageOrRegister ?
-        <LoginView viewToggle={toggleView} />
-      :
-        <RegisterView viewToggle={toggleView} />
-      }
+      <div className="w-full sm:w-11/12 md:w-3/4 lg:w-3/5">
+        {loginPageOrRegister ?
+          <LoginView viewToggle={toggleView} />
+        :
+          <RegisterView viewToggle={toggleView} />
+        }
+      </div>
     </div>
   )
 }

@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import Input from "../Input.js";
 import FormButton from "./FormButton.js";
+import GoogleButton from "./GoogleButton.js";
 
 const RegisterView = ({ viewToggle }) => {
   const navigate = useNavigate();
@@ -15,24 +16,28 @@ const RegisterView = ({ viewToggle }) => {
 
   }
 
+  const onGoogleRegisterClick = () => {
+
+  }
+
   const onGuestClick = () => {
     navigate("/")
   }
 
   return (
-    <div className="panel flex flex-col items-center my-auto px-12 w-1/2 *:mb-4 py-6">
-      <div className="w-full flex justify-between space-x-5">
+    <div className="panel phablet-max:bg-white flex flex-col items-center px-12 w-full *:mb-4 py-6">
+      <div className="form-ui-group">
         <Input
           onChange={(event) => setName(event.target.value)}
           value={name}
-          width="w-1/2"
+          width="form-ui-group-element-width"
           placeholder="John"
           label="Name"
         />
         <Input
           onChange={(event) => setSurname(event.target.value)}
           value={surname}
-          width="w-1/2"
+          width="form-ui-group-element-width"
           placeholder="Doe"
           label="Surname"
         />
@@ -63,24 +68,32 @@ const RegisterView = ({ viewToggle }) => {
 
       {/* Buttons */}
       <FormButton
-        text="Register"
         onClick={onRegisterClick}
         width="w-full"
+      >
+        Register
+      </FormButton>
+
+      <GoogleButton
+        onClick={onGoogleRegisterClick}
+        text={"Google Sign In"}
       />
 
-      <div className="w-full flex justify-between space-x-5">
+      <div className="form-ui-group">
         <FormButton
-          text="Continue as Guest"
           onClick={onGuestClick}
           isSecondary
-          width="w-1/2"
-        />
+          width="w-full phablet:w-1/2"
+        >
+          Continue as Guest
+        </FormButton>
         <FormButton
-          text="Log in Instead"
           onClick={viewToggle}
           isSecondary
-          width="w-1/2"
-        />
+          width="w-full phablet:w-1/2"
+        >
+          Log in Instead
+        </FormButton>
       </div>
     </div>
   )

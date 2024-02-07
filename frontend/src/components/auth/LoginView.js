@@ -2,6 +2,7 @@ import Input from "../Input.js"
 import { useState } from "react"
 import { useNavigate } from "react-router-dom";
 import FormButton from "./FormButton.js";
+import GoogleButton from "./GoogleButton.js";
 
 const LoginView = ({ viewToggle }) => {
   const navigate = useNavigate();
@@ -12,12 +13,16 @@ const LoginView = ({ viewToggle }) => {
 
   }
 
+  const onGoogleLogin = () => {
+
+  }
+
   const onGuestClick = () => {
     navigate("/")
   }
 
   return (
-    <div className="panel flex my-auto flex-col items-center px-12 w-1/2 *:mb-4 py-6">
+    <div className="panel flex flex-col items-center px-12 w-full *:mb-4 py-6">
       <Input
         onChange={(event) => setEmail(event.target.value)}
         value={email}
@@ -25,6 +30,7 @@ const LoginView = ({ viewToggle }) => {
         placeholder="Enter your email..."
         label="Email"
       />
+      
       <Input
         onChange={(event) => setPassword(event.target.value)}
         value={password}
@@ -35,24 +41,32 @@ const LoginView = ({ viewToggle }) => {
       />
 
       <FormButton
-        text="Log In"
         onClick={onLogInClick}
         width="w-full"
+      >
+        Log In
+      </FormButton>
+
+      <GoogleButton
+        onClick={onGoogleLogin}
+        text={"Google Log In"}
       />
 
-      <div className="w-full flex justify-between space-x-5">
+      <div className="form-ui-group">
         <FormButton
-          text="Continue as Guest"
           onClick={onGuestClick}
           isSecondary
-          width="w-1/2"
-        />
+          width="form-ui-group-element-width"
+        >
+          Continue as Guest
+        </FormButton>
         <FormButton
-          text="Register Instead"
           onClick={viewToggle}
           isSecondary
-          width="w-1/2"
-        />
+          width="form-ui-group-element-width"
+        >
+          Register Instead
+        </FormButton>
       </div>
     </div>
   )

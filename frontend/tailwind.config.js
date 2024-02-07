@@ -14,6 +14,11 @@ module.exports = {
       //   "fg": "#000000",
       //   "divider": "#D1D5DB"
       // }
+      screens: {
+        "phablet-max": {max: "599px"},
+        "lg-max": {max: "1024px"},
+        phablet: '600px',
+      }
     },
   },
   plugins: [],

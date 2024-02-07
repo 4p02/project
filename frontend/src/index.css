@@ -9,9 +9,15 @@
     pb-8
     flex
     flex-col
-    items-center
     content-center
-    h-full
+    items-center
+    min-h-screen
+  }
+
+  .icon-size {
+    @apply
+    w-10
+    h-10
   }
 
   .nav-text-btn {
@@ -19,6 +25,7 @@
     font-[600]
     text-[24px]
     hover:underline
+    w-full
   }
 
   .nav-text-btn-divider {
@@ -35,9 +42,10 @@
     py-3
     px-0
     text-center
-    text-[24px]
+    text-[20px]
+    phablet:text-[24px]
     font-bold
-    h-fit
+    h-16
     bg-black
     text-white
   }
@@ -56,12 +64,32 @@
     text-[4.5rem]
     font-bold
     text-[#191919]
+
+    phablet-max:text-[3.5rem]
   }
 
   .subtitle {
     @apply
-    text-[24px]
+    text-[1.5rem]
     text-gray-500
+  }
+
+  .form-ui-group {
+    @apply
+    w-full
+    flex
+    phablet:flex-row
+    flex-col
+    justify-between
+    space-y-5
+    phablet:space-y-0
+    phablet:space-x-5
+  }
+
+  .form-ui-group-element-width {
+    @apply
+    w-full
+    phablet:w-1/2
   }
 
   .panel {

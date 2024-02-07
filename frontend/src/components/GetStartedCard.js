@@ -5,7 +5,7 @@ const GetStartedCard = ({ title, desc, onClick }) => {
     <motion.button
       whileHover={{ scale: 1.05 }}
       onClick={onClick}
-      className="text-left flex flex-col panel m-3 w-[400px] p-5 h-[250px]"
+      className="text-left flex flex-col panel w-screen mx-6 phablet:m-3 phablet:w-[400px] p-5 h-[250px]"
     >
       <h3 className="title !text-[28px]">{title}</h3>
       {desc.split("\\n").map( (text, i) => 

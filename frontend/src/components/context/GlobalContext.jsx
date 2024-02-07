@@ -14,7 +14,8 @@ export default function GlobalContextProvider({ children }) {
     full_name: null,
     email: null,
   });
-    useEffect(() => {
+
+  useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
         // check if token is valid
@@ -22,6 +23,7 @@ export default function GlobalContextProvider({ children }) {
     }
     // else do nothing because if it not there then user is not logged in and everything is null
   }, []);
+
   return (
     <GlobalContext.Provider value={{ state, dispatch }}>
       {children}

@@ -11,8 +11,12 @@ from backend import config
 from datetime import datetime, timedelta
 from starlette.config import Config
 
+from db import Database
+
+
+
 # Set up OAuth
-config_data = {'GOOGLE_CLIENT_ID': config.auth.google_client_id, 'GOOGLE_CLIENT_SECRET': config.auth.google_client_secret}
+config_data = {'GOOGLE_CLIENT_ID': config.google_client_id, 'GOOGLE_CLIENT_SECRET': config.google_client_secret}
 starlette_config = Config(environ=config_data)
 oauth = OAuth(starlette_config)
 oauth.register(
@@ -28,12 +32,12 @@ def create_jwt_token(user_id: str) -> str:
         'exp': datetime.utcnow() + timedelta(days=config.jwt_expiry_days),
         'iat': datetime.utcnow()
     }
-    return jwt.encode(payload, config.auth.jwt_secret, algorithm='HS256')
+    return jwt.encode(payload, config.jwt_secret, algorithm='HS256')
 
 
 def decode_jwt_token(token: str) -> dict:
     try:
-        payload = jwt.decode(token, config.auth.jwt_secret, algorithms=['HS256'])
+        payload = jwt.decode(token, config.jwt_secret, algorithms=['HS256'])
         return payload if payload['exp'] > time.time() else None
     except jwt.exceptions.DecodeError as e:
         print('Invalid token', "decode error", e)
@@ -47,12 +51,27 @@ def api_key_auth(api_key):
     return True
 
 
+
+#when register is called, the email, name and password are stored into a database taboe
+
 def register(email: str, password: str, full_name: str) -> bool:
-    return {"data": "true"}
+    try:
+        # Call the register method from Routes
+        database.register_user(full_name, email, password)
+        return {"data": "true"}  # Return the result from the register method
+    except Exception as e:
+        # Handle any exceptions that occur during registration
+        print("Error occurred during registration:", e)
+        return False
 
-
+    """_summary_
+    login function, will check if the email and password pair exists in the db
+    """
 def login(email: str, password: str) -> bool:
-    return {"data": "true"}
+    if(database.login_user(email, password)):
+        return {"login": "true"}
+    else:
+        return {"login": "false"}
 
 
 async def google(request: Request):
@@ -82,3 +101,5 @@ async def google_callback(request:Request):
     print(token_expiry, profile_picture, given_name, family_name, email, "expire")
     token_jwt = "123"
     return {'result': True, 'access_token': token_jwt}
+
+

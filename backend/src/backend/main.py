@@ -17,7 +17,17 @@ async def main():
         logger.debug("db connected")
 
         logger.debug("bringing up fastapi")
-        app = fastapi.FastAPI()
+        app = fastapi.FastAPI(
+            title="Summerily",
+            description="## Summerily API",
+            summary="Summerily API",
+            version="0.0.1",
+            contact={
+                "name": "Someone",
+                "email": "someone@example.com"
+            }
+
+        )
         router: fastapi.APIRouter = Routes().get_router()
         app.include_router(router)
         app.add_middleware(SessionMiddleware, secret_key=config.auth.jwt_secret)

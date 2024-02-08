@@ -80,3 +80,7 @@ Find the `/etc/hosts` file on the system and add the following line:
 `127.0.0.1 simplify.com`
 
 Then email jonathan to add ur gmail to the google oauth client list and for the client secret, (the one is an example)
+
+## Fast API docs
+
+Go to the url `http://127.0.0.1:8080/docs` to see the fast api documentation

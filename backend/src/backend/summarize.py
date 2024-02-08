@@ -1,7 +1,13 @@
 
-def summarize_from_article(url: str) -> str:
-    return f"<h1>Summarize Page {url} </h1>"
 
 
-def summarize_from_video(url: str) -> str:
-    return f"<h1>Summarize Page {url} </h1>"
+class Summerize:
+    def __init__(self, url, user):
+        pass
+    def summerize_article(self):
+        pass
+    def save_to_database(self):
+        pass
+    
+    def summerize_video(self):
+        pass

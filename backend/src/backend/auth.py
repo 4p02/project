@@ -6,6 +6,7 @@ from authlib.integrations.starlette_client import OAuthError
 from fastapi import Depends, Request
 import jwt
 import time
+import bycrypt
 
 from backend import config
 from datetime import datetime, timedelta
@@ -51,6 +52,13 @@ def api_key_auth(api_key):
     return True
 
 
+def hash_password(password: str) -> str:
+    salt = bcrypt.gensalt()
+    hashed_password = bcrypt.hashpw(password, salt)
+    return hashed_password
+
+def dehash_password(password: str, hashed_password: str) -> str:
+    return bycrypt.checkpw(password, hashed_password)
 
 #when register is called, the email, name and password are stored into a database taboe
 
@@ -93,11 +101,11 @@ async def google_callback(request:Request):
     except OAuthError:
         raise "Oauth in da house"
     token_expiry = access_token['expires_at']
-    user_stuff = access_token['userinfo']
-    profile_picture = user_stuff['picture']
-    given_name = user_stuff['given_name']
-    family_name = user_stuff['family_name']
-    email = user_stuff['email']
+    user_info = access_token['userinfo']
+    profile_picture = user_info['picture']
+    given_name = user_info['given_name']
+    family_name = user_info['family_name']
+    email = user_info['email']
     print(token_expiry, profile_picture, given_name, family_name, email, "expire")
     token_jwt = "123"
     return {'result': True, 'access_token': token_jwt}

@@ -1,14 +1,13 @@
 from fastapi import APIRouter, Depends, Request
-from auth import api_key_auth
-from summarize import summarize_from_article, summarize_from_video
-from models import Login, Register, Summarize
+from backend.auth import api_key_auth
+from backend.models import Login, Register, Summarize
 from fastapi.middleware.cors import CORSMiddleware
-from auth import google, google_callback, login, register
+from backend.auth import google, google_callback, login, register
 
 
 
 class Routes:
-    def __init__(self):
+    def __init__(self, db):
         self.router = APIRouter()
         self.router.add_api_route("/google", self.google_route, methods=["GET"])
         self.router.add_api_route("/google/callback", self.google_callback_route, methods=["GET"])
@@ -30,6 +29,9 @@ class Routes:
     def register_route(self, form_data: Register):
         return register(form_data.email, form_data.password, form_data.full_name)
 
+    """
+    Test for documentation
+    """
     def login_route(self, form_data: Login):
         print(form_data)
         return login(form_data.email, form_data.password)
@@ -46,6 +48,6 @@ class Routes:
 
 
     def summarize_article_route(self, form_data: Summarize):
-        return summarize_from_article(form_data.url)
+        return f"todo"
     def summarize_video_route(self, form_data: Summarize):
-        return summarize_from_video(form_data.url)
+        return f"todo"

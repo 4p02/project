@@ -1,14 +1,11 @@
 import fastapi
-from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
 import uvicorn
 
 from backend import config, logger
 from backend.db import Database
 from backend.misc import asyncio_entrypoint
-from auth import google, google_callback, register, login
-from models import Login, Register, Summarize
-from routes import Routes
+from backend.routes import Routes
 
 
 @asyncio_entrypoint
@@ -28,7 +25,7 @@ async def main():
             }
 
         )
-        router: fastapi.APIRouter = Routes().get_router()
+        router: fastapi.APIRouter = Routes(db=db).get_router()
         app.include_router(router)
         app.add_middleware(SessionMiddleware, secret_key=config.auth.jwt_secret)
 

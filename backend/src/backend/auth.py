@@ -6,18 +6,16 @@ from authlib.integrations.starlette_client import OAuthError
 from fastapi import Depends, Request
 import jwt
 import time
-import bycrypt
+import bcrypt
 
 from backend import config
 from datetime import datetime, timedelta
 from starlette.config import Config
 
-from db import Database
-
 
 
 # Set up OAuth
-config_data = {'GOOGLE_CLIENT_ID': config.google_client_id, 'GOOGLE_CLIENT_SECRET': config.google_client_secret}
+config_data = {'GOOGLE_CLIENT_ID': config.auth.google_client_id, 'GOOGLE_CLIENT_SECRET': config.auth.google_client_secret}
 starlette_config = Config(environ=config_data)
 oauth = OAuth(starlette_config)
 oauth.register(
@@ -58,7 +56,7 @@ def hash_password(password: str) -> str:
     return hashed_password
 
 def dehash_password(password: str, hashed_password: str) -> str:
-    return bycrypt.checkpw(password, hashed_password)
+    return bcrypt.checkpw(password, hashed_password)
 
 #when register is called, the email, name and password are stored into a database taboe
 

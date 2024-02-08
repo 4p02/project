@@ -13,10 +13,10 @@ import Footer from "./components/footer/Footer.js";
 import GlobalContextProvider from "./components/context/GlobalContext.jsx";
 
 function App() {
-  
+
   return (
     <main className="w-screen h-screen text-black">
-      <GlobalContextProvider> 
+      <GlobalContextProvider>
         <Navbar />
         <Toaster />
         <Routes>
@@ -28,7 +28,7 @@ function App() {
           <Route path="/*" element={<NotFound/>} />
         </Routes>
       </GlobalContextProvider>
-      <Footer />
+      {/* <Footer /> */}
     </main>
   );
 }

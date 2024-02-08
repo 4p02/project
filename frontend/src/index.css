@@ -41,7 +41,7 @@
     bg-black
     text-white
   }
-  
+
   .btn-secondary {
     @apply
     btn

@@ -1,14 +1,11 @@
-
-from fastapi import APIRouter, Depends, Request, FastAPI
+from fastapi import APIRouter, Depends, Request, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
 
-
 from backend import config
-from backend.auth import api_key_auth
+from backend.auth import api_key_auth, google, google_callback, login, register
 from backend.models import Login, Register, Summarize
-from backend.auth import google, google_callback, login, register
-
+from backend.misc import handle_and_log_exceptions
 
 
 class Routes:
@@ -39,33 +36,43 @@ class Routes:
 
     def get_app(self):
         return self.app
+
+    @handle_and_log_exceptions(reraise=HTTPException(500, "Internal server error :("))
     def google_route(self, request: Request):
         return google(request=request)
+
+    @handle_and_log_exceptions(reraise=HTTPException(500, "Internal server error :("))
     def google_callback_route(self, request: Request):
         return google_callback(request=request)
 
+    @handle_and_log_exceptions(reraise=HTTPException(500, "Internal server error :("))
     def register_route(self, form_data: Register):
         return register(form_data.email, form_data.password, form_data.full_name)
 
-    """
-    Test for documentation
-    """
+    @handle_and_log_exceptions(reraise=HTTPException(500, "Internal server error :("))
     def login_route(self, form_data: Login):
+        """Logins into a user account with an email and password."""
         print(form_data)
         return login(form_data.email, form_data.password)
 
+    @handle_and_log_exceptions(reraise=HTTPException(500, "Internal server error :("))
     def get_new_token_route(self):
         return f'<h1>Get New Token Page</h1>'
 
+    @handle_and_log_exceptions(reraise=HTTPException(500, "Internal server error :("))
     def get_history_route(self):
         return f'<h1>History Page</h1>'
 
+    @handle_and_log_exceptions(reraise=HTTPException(500, "Internal server error :("))
     def shorten_route(self, form_data: Summarize):
         return f'<h1>Shorten Page</h1>'
 
 
 
+    @handle_and_log_exceptions(reraise=HTTPException(500, "Internal server error :("))
     def summarize_article_route(self, form_data: Summarize):
         return f"todo"
+
+    @handle_and_log_exceptions(reraise=HTTPException(500, "Internal server error :("))
     def summarize_video_route(self, form_data: Summarize):
         return f"todo"

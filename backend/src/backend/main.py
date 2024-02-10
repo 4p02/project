@@ -11,8 +11,10 @@ async def main():
     async with (await Database.connect()) as db:
         logger.debug("db connected")
         logger.debug("bringing up fastapi")
-        routes = Routes(db)
-        app: fastapi.FastAPI = routes.get_app()
+
+        routes = Routes(database=db)
+        app: fastapi.FastAPI = routes.app
+
         server = uvicorn.Server(
             uvicorn.Config(
                 app=app,

@@ -4,12 +4,19 @@ from starlette.middleware.sessions import SessionMiddleware
 
 from backend import config
 from backend.auth import api_key_auth, google, google_callback, login, register
+from backend.db import Database
 from backend.models import Login, Register, Summarize
 from backend.misc import handle_and_log_exceptions
 
 
 class Routes:
-    def __init__(self, db):
+    router: APIRouter
+    database: Database
+    app: FastAPI
+
+    def __init__(self, database: Database):
+        self.database = Database
+
         self.router = APIRouter()
         self.app = FastAPI(
             title="Summerily",
@@ -27,6 +34,7 @@ class Routes:
         self.router.add_api_route("/register", self.register_route, methods=["POST"])
         self.router.add_api_route("/login", self.login_route, methods=["POST"])
         self.router.add_api_route("/get_new_token", self.get_new_token_route, methods=["POST"])
+
         self.router.add_api_route("/summarize/article", self.summarize_article_route, methods=["POST"], dependencies=[Depends(api_key_auth)])
         self.router.add_api_route("/summarize/video", self.summarize_video_route, methods=["POST"], dependencies=[Depends(api_key_auth)])
         self.router.add_api_route("/shorten", self.shorten_route, methods=["POST"], dependencies=[Depends(api_key_auth)])
@@ -34,8 +42,6 @@ class Routes:
         self.app.include_router(self.router)
         self.app.add_middleware(SessionMiddleware, config.auth.jwt_secret)
 
-    def get_app(self):
-        return self.app
 
     @handle_and_log_exceptions(reraise=HTTPException(500, "Internal server error :("))
     def google_route(self, request: Request):

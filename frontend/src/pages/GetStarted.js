@@ -9,7 +9,7 @@ const GetStarted = () => {
   const continueAsGuest = () => navigate("/");
 
   return (
-    <div className="flex flex-col items-center min-h-screen h-fit w-screen p-16">
+    <div className="page px-8 pt-4">
       {/* Header Group */}
       <div className="flex flex-col w-full">
         <h1 className="title phablet-max:text-center">Create an Account or Log In</h1>
@@ -30,7 +30,7 @@ const GetStarted = () => {
         />
         <GetStartedCard
           title="Continue as Guest"
-          desc="Want to be anonynymous? Continue with our guest mode.\nNote: Links & summaries won't be saved!"
+          desc="Want to be anonymous? Continue with our guest mode.\nNote: Links & summaries won't be saved!"
           onClick={continueAsGuest}
         />
       </div>

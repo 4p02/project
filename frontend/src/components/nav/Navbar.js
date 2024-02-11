@@ -24,8 +24,16 @@ const Navbar = () => {
   const onHistoryClick = () => pathname !== "/history" && navigate("/history");
   const onHomeClick = () => pathname !== "/" && navigate("/");
   const onBackClick = () => navigate(-1);
-  const onThemeToggle = () => setDarkMode(prev => !prev)
   const onLogOut = () => toast.success("Logged out!");
+  const onThemeToggle = () => setDarkMode(prev => !prev);
+
+  useEffect(() => {
+    if (darkMode) {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+  }, [darkMode])
 
   // Automatically close menu when route is changed for quality of life
   useEffect(() => {
@@ -43,14 +51,15 @@ const Navbar = () => {
     // If the user hasn't visited once before, redirect to landing page
     if (!localStorage.getItem("FIRST_VISIT"))
       navigate("/landing");
+    
   }, []);
 
   return (landingRoutes.findIndex(route => route === pathname) === -1 &&
-    <div className="fixed z-50 bg-white flex justify-between items-center w-screen h-16 border-2 border-b-divider pr-2">
+    <div className="fixed z-50 bg-inherit flex justify-between items-center w-screen h-16 border-col border-b-2 pr-2">
       {/* Logo Group */}
       <div className="flex h-full w-fit items-center justify-between cursor-pointer" onClick={onHomeClick}>
         <img className="h-full mr-2 border-2 border-black" src={logo} alt="Logo" />
-        <p className="font-[600] text-[24px] mr-2">Simplify</p>
+        <p className="font-[600] text-[24px] mr-2">Summarily</p>
       </div>
 
       {/* Icon button menu */}
@@ -95,10 +104,10 @@ const Navbar = () => {
         {showMenu && 
           <motion.div
             exit={{ x: "100%" }}
-            animate={{ x: 5}}
+            animate={{ x: 0}}
             initial={{ x: "100%" }}
             transition={{ ease: "linear", duration: 0.05 }}
-            className="absolute w-screen sm:w-56 px-2 h-screen right-0 top-full text-center space-y-3 flex flex-col bg-white border-2 border-divider py-6"
+            className="absolute w-screen sm:w-56 px-2 h-screen right-0 top-full text-center space-y-3 flex flex-col bg-inherit text-inherit border-col border-2 py-6"
           >
             {/* History button */}
             <button className="nav-text-btn" onClick={onHistoryClick} >

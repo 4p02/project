@@ -20,6 +20,12 @@
     h-10
   }
 
+  .border-col {
+    @apply
+    border-light-gray
+    dark:border-dark-gray
+  }
+
   .nav-text-btn {
     @apply
     font-[600]
@@ -32,7 +38,7 @@
     @apply
     w-[2px]
     h-1/2
-    bg-[#D1D5DB]
+    bg-light-gray
     rounded-lg
   }
 
@@ -46,24 +52,30 @@
     phablet:text-[24px]
     font-bold
     h-16
-    bg-black
-    text-white
+    bg-dark
+    text-light
+    
+    dark:bg-red-600
   }
   
   .btn-secondary {
     @apply
     btn
     border-2
-    border-black
-    bg-white
-    text-black
+    border-dark
+    bg-light
+    text-dark
+    dark:border-dark
+    dark:bg-light
+    dark:text-dark
   }
 
   .title {
     @apply
     text-[4.5rem]
     font-bold
-    text-[#191919]
+    text-dark
+    dark:text-light
 
     phablet-max:text-[3.5rem]
   }
@@ -71,7 +83,8 @@
   .subtitle {
     @apply
     text-[1.5rem]
-    text-gray-500
+    text-dark-gray
+    dark:text-light-gray
   }
 
   .form-ui-group {
@@ -97,7 +110,9 @@
     /* border-2
     bg-gray-100
     border-gray-400 */
-    bg-[#F8F8F8]
+    bg-light-gray
+    dark:bg-dark
+    text-inherit
     shadow-lg
     rounded-2xl
   }
@@ -110,8 +125,16 @@
 		/* background by SVGBackgrounds.com */
 		bg-fixed
 		bg-center
-		text-white
     overflow-x-hidden
-		;
+    
+    bg-light
+    text-dark
+
+    dark:bg-dark
+    dark:text-light
 	}
+}
+
+* {
+  scrollbar-width: thin;
 }

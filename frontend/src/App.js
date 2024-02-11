@@ -15,7 +15,7 @@ import GlobalContextProvider from "./components/context/GlobalContext.jsx";
 function App() {
   
   return (
-    <main className="w-screen h-screen text-black">
+    <main className="w-screen h-screen bg-light text-dark dark:bg-dark dark:text-light">
       <GlobalContextProvider> 
         <Navbar />
         <Toaster />

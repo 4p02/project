@@ -30,7 +30,7 @@ const Input = ({
       }
 
       {/* Input Box */}
-      <div className={`flex items-center border-2 ${error ? "border-red-500" : "border-divider"} bg-white px-3 py-3 ${type === "search" ? "rounded-2xl" : "rounded-xl"} h-min w-full space-x-5`}>
+      <div className={`flex items-center border-2 ${error ? "border-red-500" : "border-dark-gray"} bg-white px-3 py-3 ${type === "search" ? "rounded-2xl" : "rounded-xl"} h-min w-full space-x-5 text-dark`}>
         <input
           className="outline-none w-full h-full"
           placeholder={placeholder}
@@ -54,7 +54,6 @@ const Input = ({
         {/* Hide/show password button */}
         {type === "password" &&
           <button
-            
             className="flex items-center text-[20px]"
             onClick={() => setShowPassword(prev => !prev)}
           >

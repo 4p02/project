@@ -35,11 +35,11 @@ const Home = () => {
   }
 
   return (
-    <div className="page items-start h-fit px-6 lg:p-20 lg:space-x-16 lg:flex-row ">
+    <div className="page items-start h-fit px-6 lg:p-20 lg:space-x-16 lg:flex-row">
       {/* Left section */}
-      <div className="h-full flex flex-col w-full lg:w-1/2">
-        <h1 className="title lg-max:text-center">Simplify Your Links</h1>
-        <p className="subtitle text-[1.25rem] mb-5 lg-max:text-center">Enter the URL you want to summarize and shorten below. Simplify will generate a short link and a concise summary for you.</p>
+      <div className="h-min min-h-[calc(100vh-8rem)] flex flex-col w-full lg:w-1/2">
+        <h1 className="title lg-max:text-center">Shorten Your Link</h1>
+        <p className="subtitle text-[1.25rem] mb-5 lg-max:text-center">Enter the URL you want to summarize and shorten below. Summarily will generate a short link and a concise summary for you.</p>
         <Input
           onEnter={onSummarizeClick}
           onChange={(event) => setInputURLValue(event.target.value)}
@@ -56,31 +56,34 @@ const Home = () => {
         </FormButton>
 
         <h1 className="title mt-auto lg-max:text-center lg-max:mt-6">Short Link</h1>
-        <div className="mb-auto panel justify-between py-3 h-16 px-4 flex items-center">
+        <div className="panel justify-between py-3 h-16 px-4 flex items-center dark:bg-light">
           {url ?
-            <p className="text-[16px]">{url}</p>
+            <p className="text-[16px] text-dark">{url}</p>
           :
-            <p className="text-[16px] text-gray-400">Shortened link will appear here!</p>
+            <p className="text-[16px] text-dark-gray">Shortened link will appear here!</p>
           }
           
-          <motion.button whileHover={{ scale: 1.2 }} className="text-[24px]" onClick={onLinkCopy}>
+          <motion.button whileHover={{ scale: 1.2 }} className="text-[24px] dark:text-dark" onClick={onLinkCopy}>
             <FaCopy />
           </motion.button>
         </div>
       </div>
       
       {/* Right section */}
-      <div className="h-full flex flex-col w-full lg:w-1/2">
+      <div className="h-[calc(100vh-8rem)] flex flex-col w-full lg:w-1/2">
         <h1 className="title lg-max:text-center lg-max:mt-6">Summary</h1>
-        <div className="panel h-full relative py-6 px-6">
-          {summary ?
-            <p className="text-[16px]">{summary}</p>
-          :
-            <p className="text-[16px] text-gray-400">Summary will appear here!</p>
-          }
-          <motion.button whileHover={{ scale: 1.2 }} className="text-[24px] absolute top-2 right-2" onClick={onSummaryCopy}>
-            <FaCopy />
-          </motion.button>
+        <div className="panel h-full w-full overflow-y-hidden relative">
+          <div className="panel overflow-y-auto overflow-x-hidden h-full p-4 dark:bg-light dark:text-dark">
+            {summary ?
+              <p className="text-[16px]">{summary}</p>
+            :
+              <p className="text-[16px] text-dark-gray">Summary will appear here!</p>
+            }
+
+            <motion.button whileHover={{ scale: 1.2 }} className="text-[24px] absolute top-2 right-2" onClick={onSummaryCopy}>
+              <FaCopy />
+            </motion.button>
+          </div>
         </div>
       </div>
     </div>

@@ -1,7 +1,12 @@
-from fastapi import APIRouter, Depends, Request
+
+from fastapi import APIRouter, Depends, Request, FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from starlette.middleware.sessions import SessionMiddleware
+
+
+from backend import config
 from backend.auth import api_key_auth
 from backend.models import Login, Register, Summarize
-from fastapi.middleware.cors import CORSMiddleware
 from backend.auth import google, google_callback, login, register
 
 
@@ -9,6 +14,17 @@ from backend.auth import google, google_callback, login, register
 class Routes:
     def __init__(self, db):
         self.router = APIRouter()
+        self.app = FastAPI(
+            title="Summerily",
+            description="## Summerily API",
+            summary="Summerily API",
+            version="0.0.1",
+            contact={
+                "name": "Someone",
+                "email": "someone@example.com"
+            }
+
+        )
         self.router.add_api_route("/google", self.google_route, methods=["GET"])
         self.router.add_api_route("/google/callback", self.google_callback_route, methods=["GET"])
         self.router.add_api_route("/register", self.register_route, methods=["POST"])
@@ -18,9 +34,11 @@ class Routes:
         self.router.add_api_route("/summarize/video", self.summarize_video_route, methods=["POST"], dependencies=[Depends(api_key_auth)])
         self.router.add_api_route("/shorten", self.shorten_route, methods=["POST"], dependencies=[Depends(api_key_auth)])
         self.router.add_api_route("/history", self.get_history_route, methods=["GET"], dependencies=[Depends(api_key_auth)])
+        self.app.include_router(self.router)
+        self.app.add_middleware(SessionMiddleware, config.auth.jwt_secret)
 
-    def get_router(self):
-        return self.router
+    def get_app(self):
+        return self.app
     def google_route(self, request: Request):
         return google(request=request)
     def google_callback_route(self, request: Request):

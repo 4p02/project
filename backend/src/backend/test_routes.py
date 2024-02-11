@@ -1,18 +1,31 @@
-import requests
-#test file
-#used to see if the database was working
-test_data= {
-    "full_name":"Jose_h",
-    "email": "test@123.com",
+import pytest
+from fastapi.testclient import TestClient
+
+from backend.db import Database
+from backend.routes import Routes
+
+test_register_data = {
+        "full_name":"Jose_h",
+        "email": "123",
+        "password" : "thisissecure"
+    }
+
+
+test_login_data = {
+    "email": "123",
     "password" : "thisissecure"
 }
-test_login_data= {
-    "full_name":"Jose_h3",
-    "email": "test@123.com",
-    "password" : "thisisNOTsecure"
-}
 
-req =requests.post("http://simplify.com:8080/register",json=test_data)
-print(req.text)
-req1 = requests.post("http://simplify.com:8080/login",json=test_login_data)
-print(req1.text)
+pytest_plugins = ('pytest_asyncio',)
+
+@pytest.mark.asyncio
+async def test_register():
+    async with (await Database.connect()) as db:
+        routes = Routes(db)
+        app = routes.get_app()
+        client = TestClient(app)
+        response = client.post("/register", json=test_register_data)
+        assert response.status_code == 200
+        assert response.json() == {"data": "true"}
+    pass    
+

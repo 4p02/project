@@ -1,5 +1,4 @@
 import fastapi
-from starlette.middleware.sessions import SessionMiddleware
 import uvicorn
 
 from backend import config, logger
@@ -7,28 +6,13 @@ from backend.db import Database
 from backend.misc import asyncio_entrypoint
 from backend.routes import Routes
 
-
 @asyncio_entrypoint
 async def main():
     async with (await Database.connect()) as db:
         logger.debug("db connected")
-
         logger.debug("bringing up fastapi")
-        app = fastapi.FastAPI(
-            title="Summerily",
-            description="## Summerily API",
-            summary="Summerily API",
-            version="0.0.1",
-            contact={
-                "name": "Someone",
-                "email": "someone@example.com"
-            }
-
-        )
-        router: fastapi.APIRouter = Routes(db=db).get_router()
-        app.include_router(router)
-        app.add_middleware(SessionMiddleware, secret_key=config.auth.jwt_secret)
-
+        routes = Routes(db)
+        app: fastapi.FastAPI = routes.get_app()
         server = uvicorn.Server(
             uvicorn.Config(
                 app=app,

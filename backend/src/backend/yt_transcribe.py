@@ -9,20 +9,9 @@ client = OpenAI(
     api_key=os.environ.get("OPENAI_API_KEY"),
 )
 
-video_url = "https://youtu.be/XsKAZCedvcY?si=_kSfdTB4TAdt1P4D"  # Replace with the URL of the video you want to download
+video_url = "https://youtu.be/AF8d72mA41M?si=0jXJqFFhmhF_tATl"  # Replace with the URL of the video you want to download
 
 
-chat_completion = client.chat.completions.create(
-    messages=[
-        {
-            "role": "user",
-            "content": "Say this is a test",
-        }
-    ],
-    model="gpt-3.5-turbo",
-)
-
-print(chat_completion)
 
 
 def download_video_with_subtitles(url):
@@ -69,10 +58,21 @@ def vtt_to_string(file_path):
         return str(e)
 
 
-# if __name__ == "__main__":
-#     vtt_file_path = download_video_with_subtitles(video_url)
-#     if vtt_file_path:
-#         process_webvtt(vtt_file_path)
-#         vtt_content = vtt_to_string(vtt_file_path)
-#         print(vtt_content)
-#         delete_file(vtt_file_path)
+if __name__ == "__main__":
+    vtt_file_path = download_video_with_subtitles(video_url)
+    if vtt_file_path:
+        process_webvtt(vtt_file_path)
+        vtt_content = vtt_to_string(vtt_file_path)
+        summarized_content = vtt_content[:8000]
+        chat_completion = client.chat.completions.create(
+        messages=[
+            {
+            "role": "user",
+            "content": f"Summarize this video for me: \n{summarized_content}",
+            }
+            ],
+        model="gpt-4-0125-preview",
+                        )
+        print(chat_completion.choices[0].message.content)
+        delete_file(vtt_file_path)
+

@@ -1,20 +1,28 @@
 import Input from "../Input.js"
-import { useState } from "react"
+import { useEffect, useState, useContext } from "react"
 import { useNavigate } from "react-router-dom";
 import FormButton from "./FormButton.js";
 import GoogleButton from "./GoogleButton.js";
+import { LoginUser } from "../../api/Auth.js";
+import { GlobalContext } from "../context/GlobalContext.jsx";
 
 const LoginView = ({ viewToggle }) => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const userContext = useContext(GlobalContext);
+  useEffect(() => {
+    // check if token exists here so we can avoid this view
+    const userObj = userContext.user;
 
+  }, [])
   const onLogInClick = () => {
-
+    const response = LoginUser(email, password)
+    // handle response
   }
 
   const onGoogleLogin = () => {
-
+    window.location.href = `${BACKEND_API_URL}/auth/google`;
   }
 
   const onGuestClick = () => {

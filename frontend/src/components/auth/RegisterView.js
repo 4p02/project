@@ -1,8 +1,9 @@
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import Input from "../Input.js";
 import FormButton from "./FormButton.js";
 import GoogleButton from "./GoogleButton.js";
+import { GlobalContext } from "../context/GlobalContext.jsx";
 
 const RegisterView = ({ viewToggle }) => {
   const navigate = useNavigate();
@@ -11,13 +12,17 @@ const RegisterView = ({ viewToggle }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-
+  const userContext = useContext(GlobalContext);
+  useEffect(() => {
+    // check if token exists here so we can avoid this view
+  }, [])
   const onRegisterClick = () => {
-
+    const response = RegisterUser(email, password, `${name} ${surname}`)
+    // handle response
   }
 
   const onGoogleRegisterClick = () => {
-
+    window.location.href = `${BACKEND_API_URL}/auth/google`;
   }
 
   const onGuestClick = () => {

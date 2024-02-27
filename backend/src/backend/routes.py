@@ -40,7 +40,7 @@ class Routes:
         self.router.add_api_route("/shorten", self.shorten_route, methods=["POST"], dependencies=[Depends(api_key_auth)])
         self.router.add_api_route("/history", self.get_history_route, methods=["GET"], dependencies=[Depends(api_key_auth)])
         self.app.include_router(self.router)
-        self.app.add_middleware(SessionMiddleware, config.auth.jwt_secret)
+        self.app.add_middleware(SessionMiddleware, secret_key=config.auth.jwt_secret)
 
 
     @handle_and_log_exceptions(reraise=HTTPException(500, "Internal server error :("))

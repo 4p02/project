@@ -19,9 +19,9 @@ class Routes:
 
         self.router = APIRouter()
         self.app = FastAPI(
-            title="Summerily",
-            description="## Summerily API",
-            summary="Summerily API",
+            title="Summarily",
+            description="## Summarily API",
+            summary="Summarily API",
             version="0.0.1",
             contact={
                 "name": "Someone",

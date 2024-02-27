@@ -44,8 +44,6 @@ create table public.articles (
     type article_type not null,
     history bigint[] not null,
     private boolean not null
-    -- todo: figure out how the *fuck* to setup fk constraints on this shit???
-    -- constraint articles_fk
 );
 
 create table public.links (
@@ -55,7 +53,3 @@ create table public.links (
     given_link text not null,
     shortened_link text not null
 );
-
-
--- todo: setup rls
--- todo: setup rls per column

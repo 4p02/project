@@ -1,5 +1,7 @@
 import React, { createContext, useReducer, useEffect } from "react";
 import Reducer from "./reducers";
+import User from "../../api/User";
+
 
 export const GlobalContext = createContext({});
 

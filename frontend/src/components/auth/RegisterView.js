@@ -4,6 +4,8 @@ import Input from "../Input.js";
 import FormButton from "./FormButton.js";
 import GoogleButton from "./GoogleButton.js";
 import { GlobalContext } from "../context/GlobalContext.jsx";
+import { BACKEND_API_URL } from "../../lib/Constants.js";
+import { RegisterUser } from "../../api/Auth.js";
 
 const RegisterView = ({ viewToggle }) => {
   const navigate = useNavigate();

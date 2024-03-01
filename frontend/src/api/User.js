@@ -1,6 +1,6 @@
+import { BACKEND_API_URL } from '../lib/Constants.js';
 
-
-class User {
+export default class User {
     // maybe store links
     email;
     fullName;

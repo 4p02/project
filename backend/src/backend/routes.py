@@ -22,8 +22,6 @@ class Routes:
             title="Summarily",
             description="""
             Summarily is a service that provides a set of tools to help you summarize articles, videos, and shorten URLs.
-                      
-
             """,
             summary="Summarily API",
             version="0.0.1",

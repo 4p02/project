@@ -5,6 +5,7 @@ import FormButton from "./FormButton.js";
 import GoogleButton from "./GoogleButton.js";
 import { LoginUser } from "../../api/Auth.js";
 import { GlobalContext } from "../context/GlobalContext.jsx";
+import { BACKEND_API_URL } from "../../lib/Constants.js";
 
 const LoginView = ({ viewToggle }) => {
   const navigate = useNavigate();

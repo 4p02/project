@@ -1,16 +1,18 @@
-import time
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
+from typing import TypedDict, Self, NamedTuple, Union
+
 from authlib.integrations.starlette_client import OAuth
 from authlib.integrations.starlette_client import OAuthError
 
+from starlette.config import Config
 from fastapi import Depends, Request
-import jwt
-import time
 import bcrypt
+from jwt import JWT
+from jwt.jwk import OctetJWK
+from jwt.exceptions import JWTDecodeError
 
 from backend import config
-from datetime import datetime, timedelta
-from starlette.config import Config
+from backend.db import Database
 
 
 
@@ -24,23 +26,37 @@ oauth.register(
     client_kwargs={'scope': 'openid email profile'},
 )
 
+JWT_KEY = OctetJWK(config.auth.jwt_secret.encode("utf-8"))
 
-def create_jwt_token(user_id: str) -> str:
-    payload = {
-        'user_id': user_id,
-        'exp': datetime.utcnow() + timedelta(days=config.jwt_expiry_days),
-        'iat': datetime.utcnow()
-    }
-    return jwt.encode(payload, config.jwt_secret, algorithm='HS256')
+class Token(NamedTuple):
+    uid: int
+    nbf: datetime
+    exp: datetime
 
+    def new(uid: int) -> Self:
+        return Token(
+            uid=uid,
+            # account for clock drift on other clients, just in case
+            nbf=(birth := datetime.now(timezone.utc) - timedelta(minutes=1)),
+            exp=(birth + timedelta(days=config.auth.jwt_expiry_days)),
+        )
 
-def decode_jwt_token(token: str) -> dict:
-    try:
-        payload = jwt.decode(token, config.jwt_secret, algorithms=['HS256'])
-        return payload if payload['exp'] > time.time() else None
-    except jwt.exceptions.DecodeError as e:
-        print('Invalid token', "decode error", e)
-        return None
+    def encode(self) -> str:
+        data = self._asdict()
+        data["nbf"] = int(data["nbf"].timestamp())
+        data["exp"] = int(data["exp"].timestamp())
+        return JWT().encode(data, JWT_KEY, alg="HS512")
+
+    def decode(token: str) -> Self:
+        """May raise JWTDecodeError if expired or used before valid"""
+        data = JWT().decode(token, JWT_KEY, algorithms=["HS512"])
+        try:
+            data["nbf"] = datetime.fromtimestamp(data["nbf"], tz=timezone.utc)
+            data["exp"] = datetime.fromtimestamp(data["exp"], tz=timezone.utc)
+        except OverflowError as ex:
+            raise JWTDecodeError("invalid timestamp") from ex
+
+        return Token(**data)
 
 
 def api_key_auth(api_key):

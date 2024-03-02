@@ -1,3 +1,5 @@
+"""FastAPI route parameter data models. Not database table models!"""
+
 from pydantic import BaseModel
 
 

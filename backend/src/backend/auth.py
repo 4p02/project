@@ -71,11 +71,12 @@ def hash_password(password: str) -> str:
     hashed_password = bcrypt.hashpw(password, salt)
     return hashed_password
 
+
 def dehash_password(password: str, hashed_password: str) -> str:
     return bcrypt.checkpw(password, hashed_password)
 
-#when register is called, the email, name and password are stored into a database taboe
 
+#when register is called, the email, name and password are stored into a database taboe
 def register(email: str, password: str, full_name: str) -> bool:
     try:
         # Call the register method from Routes
@@ -86,10 +87,11 @@ def register(email: str, password: str, full_name: str) -> bool:
         print("Error occurred during registration:", e)
         return False
 
-    """_summary_
+
+def login(email: str, password: str) -> bool:
+    """
     login function, will check if the email and password pair exists in the db
     """
-def login(email: str, password: str) -> bool:
     if(database.login_user(email, password)):
         return {"login": "true"}
     else:
@@ -123,5 +125,3 @@ async def google_callback(request:Request):
     print(token_expiry, profile_picture, given_name, family_name, email, "expire")
     token_jwt = "123"
     return {'result': True, 'access_token': token_jwt}
-
-

@@ -6,7 +6,7 @@ MIN_VERSION_POSTGRES_VERSION="9.6"
 # get postgres version
 PG_VERSION=$(psql --version | awk '{print $3}')
 
-CONFIG_FILE_NAME="postgrest.default.conf"
+CONFIG_FILE_NAME="postgrest.conf"
 
 version_compare () {
     if [[ $1 == $2 ]]

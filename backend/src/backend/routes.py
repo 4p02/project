@@ -51,7 +51,7 @@ class Routes:
     app: FastAPI
 
     def __init__(self, db: Database):
-        self.db = Database
+        self.db = db
 
         self.router = APIRouter()
         self.app = FastAPI(

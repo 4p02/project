@@ -5,6 +5,7 @@ log_level = "info"
 # jwt_secret is randomized when backend-setupcfg is ran
 jwt_secret = "KrTidID0s8udOPENmXGCbZRieeYy5QR5yiEKKeZYTuNqTzQRqSNcj5DhY2kCAqgmViw8YsNFGP826vIY5kB0XvgYaGvnS3dpEi6mQmaEL1DoV4tSKNEiKNn1dqcxrBiu"
 jwt_expiry_days = 7
+bcrypt_rounds = 12
 google_client_id = "yourapp.apps.googleusercontent.com"
 google_client_secret = "superbigsecret"
 google_callback_uri = "http://simplify.com:8080/google/callback"

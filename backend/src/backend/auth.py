@@ -59,20 +59,12 @@ class Token(NamedTuple):
         return Token(**data)
 
 
-def api_key_auth(api_key):
-    # decoded_token = decode_jwt_token(api_key)
-    # if decoded_token is None:
-    #     return False
-    return True
-
-
 def hash_password(password: str) -> str:
-    salt = bcrypt.gensalt()
-    hashed_password = bcrypt.hashpw(password, salt)
+    hashed_password = bcrypt.hashpw(password, bcrypt.gensalt(rounds=config.auth.bcrypt_rounds))
     return hashed_password
 
 
-def dehash_password(password: str, hashed_password: str) -> str:
+def check_password(password: str, hashed_password: str) -> bool:
     return bcrypt.checkpw(password, hashed_password)
 
 

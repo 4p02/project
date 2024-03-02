@@ -73,6 +73,7 @@ class Config():
     auth: TypedDict("auth",
         jwt_secret=str,
         jwt_expiry_days=int,
+        bcrypt_rounds=int,
         google_client_id=str,
         google_client_secret=str,
         google_callback_uri=str,

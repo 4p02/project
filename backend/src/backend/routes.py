@@ -14,8 +14,8 @@ class Routes:
     database: Database
     app: FastAPI
 
-    def __init__(self, database: Database):
-        self.database = Database
+    def __init__(self, db: Database):
+        self.db = Database
 
         self.router = APIRouter()
         self.app = FastAPI(
@@ -29,8 +29,8 @@ class Routes:
                 "name": "Someone",
                 "email": "someone@example.com"
             }
-
         )
+
         self.router.add_api_route("/google", self.google_route, methods=["GET"])
         self.router.add_api_route("/google/callback", self.google_callback_route, methods=["GET"])
         self.router.add_api_route("/register", self.register_route, methods=["POST"])

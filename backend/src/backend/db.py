@@ -5,8 +5,9 @@ import asyncio
 import re
 from string import Formatter
 from typing import Self
+import functools
 
-from psycopg import AsyncConnection, AsyncCursor
+from psycopg import AsyncConnection, AsyncCursor, AsyncTransaction
 from psycopg.rows import dict_row
 
 from backend import config, logger
@@ -20,8 +21,6 @@ class Database:
 
     def __init__(self, conx: AsyncConnection):
         self.conx = conx
-        # make cursor .fetch methods produce dicts by default, instead of tuples
-        self.conx.row_factory = dict_row
 
     @staticmethod
     async def connect() -> Self:
@@ -29,6 +28,8 @@ class Database:
         return Database(
             await AsyncConnection.connect(
                 config.db.conx,
+                # make .fetch methods produce dicts by default, instead of tuples
+                row_factory=dict_row,
                 autocommit=True  # don't treat everything as a transaction
             )
         )
@@ -45,6 +46,10 @@ class Database:
         await self.conx.__aexit__(*args, **kwargs)
         return
 
-    def cursor(self) -> AsyncCursor: return self.conx.cursor()
+    @functools.wraps(AsyncConnection.cursor)
+    def cursor(self, **kwargs) -> AsyncCursor: return self.conx.cursor(**kwargs)
 
-    def transaction(self) -> AsyncTransaction: return self.conx.transaction()
+    # fixme: this does not work with async connections!! different async threads will interefere with transactions!
+    # fixme: use a connection pool instead!
+    @functools.wraps(AsyncConnection.transaction)
+    def transaction(self, **kwargs) -> AsyncTransaction: return self.conx.transaction(**kwargs)

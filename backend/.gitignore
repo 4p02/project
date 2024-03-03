@@ -10,5 +10,6 @@ __pycache__/
 .mypy_cache/
 
 # config files
-# do not commit! instead, commit config.default and use config.toml for local
+# do not commit! instead, commit the respective .default files
 config.toml
+postgrest.conf

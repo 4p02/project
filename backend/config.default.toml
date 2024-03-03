@@ -3,7 +3,7 @@ log_level = "info"
 
 [auth]
 # jwt_secret is randomized when backend-setupcfg is ran
-jwt_secret = "KrTidID0s8udOPENmXGCbZRieeYy5QR5yiEKKeZYTuNqTzQRqSNcj5DhY2kCAqgmViw8YsNFGP826vIY5kB0XvgYaGvnS3dpEi6mQmaEL1DoV4tSKNEiKNn1dqcxrBiu"
+jwt_secret = "secret_with_at_least_32_characters"
 jwt_expiry_days = 7
 bcrypt_rounds = 12
 google_client_id = "yourapp.apps.googleusercontent.com"

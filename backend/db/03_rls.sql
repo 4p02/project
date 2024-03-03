@@ -1,7 +1,7 @@
 alter table private.users enable row level security;
 alter table public.documents enable row level security;
-alter table public.articles enable row level security;
 alter table public.links enable row level security;
+alter table private.history enable row level security;
 
 
 -- no reason to grant anon access; they can't query or update anything
@@ -17,16 +17,4 @@ create policy public_users_rls on private.users as restrictive for select
 
 grant select on public.documents to pgrest_auth;
 grant select on public.documents to pgrest_anon;
--- create policy public_documents_rls on public.documents as permissive for select
---     using (
---         select * from public.articles where owner =
---         owner = current_setting('request.jwt.claims', true)::json->>'uid'
---     );
 
-
-grant select, update(private), delete on public.articles to pgrest_auth;
-grant select, update(private), delete on public.articles to pgrest_anon;
-
-create policy public_articles_rls on public.articles as permissive for all
-    using ((not private) or (owner = (current_setting('request.jwt.claims', true)::json->>'uid')::int))
-    with check (owner = (current_setting('request.jwt.claims', true)::json->>'uid')::int);

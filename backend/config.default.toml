@@ -15,16 +15,16 @@ host = "0.0.0.0"
 port = 8080
 
 [db]
-# if using postgres over tcp:
-host = "localhost"
-port = 5432
-# if using postgres over a domain socket:
-# host = "/var/run/postgresql/"
+## A postgres connection string to connect to, documented at:
+## https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-CONNSTRING
+# If using postgres over tcp:
+# conx = "host=localhost port=5432 dbname=public user=username password=yoursupersecretpassword"
+# If using postgres over a domain socket:
+conx = "host=/var/run/postgresql/ dbname=public"
 
-user = "backend"
-password = "yoursupersecretpassword"
-dbname = "public"
 current_migration = ""
+pgrest_anon_role = "pgrest_anon"
+pgrest_auth_role = "pgrest_auth"
 
 [ollama]
 endpoint = "http://localhost:11434/"

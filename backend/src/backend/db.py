@@ -22,26 +22,10 @@ class Database:
 
     @staticmethod
     async def connect() -> Self:
-        params = {
-            "host": config.db.host,
-            "port": config.db.get("port"),
-            "dbname": config.db.dbname,
-            "user": config.db.get("user"),
-            "password": config.db.get("password"),
-        }
-
-        conx_str = ""
-        for (key, val) in params.items():
-            if val is not None:
-                val = _RE_CONX_ESCAPE.sub(repl=r"\\\1", string=str(val))
-                conx_str += f"{key}='{val}' "
-
-        conx_str = conx_str.rstrip()
-
-        logger.debug("connecting to db: " + conx_str)
+        logger.debug("connecting to db: " + config.db.conx)
         return Database(
             await AsyncConnection.connect(
-                conx_str,
+                config.db.conx,
                 autocommit=True  # don't treat everything as a transaction
             )
         )

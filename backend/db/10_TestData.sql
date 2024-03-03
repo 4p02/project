@@ -16,12 +16,12 @@ values
     ('video', null, 'http://video3.com', null, '', '0x123abc', null),
     ('webpage', null, 'https://gist.githubusercontent.com/mattipv4/045239bc27b16b2bcf7a3a9a4648c08a/raw/2411e31293a35f3e565f61e7490a806d4720ea7e/bee%2520movie%2520script', null, null, null, null);
 
--- test data for 'articles' table
-insert into public.articles (owner, type, history, private)
-values
-    (1, 'document', '{1,2,3}', true),
-    (2, 'video', '{4,5,6}', false),
-    (3, 'webpage', '{7,8}', true);
+-- -- test data for 'articles' table
+-- insert into public.articles (owner, type, history, private)
+-- values
+--     (1, 'document', '{1,2,3}', true),
+--     (2, 'video', '{4,5,6}', false),
+--     (3, 'webpage', '{7,8}', true);
 
 -- test data for 'links' table
 insert into public.links (given_link, shortened_link)

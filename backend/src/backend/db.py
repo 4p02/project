@@ -3,7 +3,6 @@
 
 import asyncio
 import re
-import platform
 from string import Formatter
 from typing import Self
 
@@ -13,11 +12,6 @@ from backend import config, logger
 
 
 _RE_CONX_ESCAPE = re.compile(r"(['\\])")
-
-if platform.system() == 'Windows':
-    from asyncio import WindowsSelectorEventLoopPolicy
-    # FreeBSD-specific code here...
-    asyncio.set_event_loop_policy(WindowsSelectorEventLoopPolicy())
 
 
 class Database:

@@ -1,6 +1,7 @@
 import logging
 from logging import Logger
 from os import path
+import platform
 
 from backend.cfg import Config
 
@@ -15,6 +16,12 @@ config: Config = None
 def __init__():
     global logger
     global config
+
+    # psycopg requires a special asyncio policy on windows
+    if platform.system() == 'Windows':
+        from asyncio import WindowsSelectorEventLoopPolicy
+        asyncio.set_event_loop_policy(WindowsSelectorEventLoopPolicy())
+
 
     config = Config.from_toml_file(path.join(MODULE_ROOT, "config.default.toml"))
     logger.addHandler(log_handler := config.into_log_handler())

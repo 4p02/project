@@ -17,6 +17,8 @@ create table public.documents (
     type article_type not null,
     filename text default null,
     source_url text default null,
+    file bytea default null,
+    title text default null,
     body bytea default null,
     summary bytea default null
 );

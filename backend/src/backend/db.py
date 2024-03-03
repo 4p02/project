@@ -7,6 +7,7 @@ from string import Formatter
 from typing import Self
 
 from psycopg import AsyncConnection, AsyncCursor
+from psycopg.rows import dict_row
 
 from backend import config, logger
 
@@ -19,6 +20,8 @@ class Database:
 
     def __init__(self, conx: AsyncConnection):
         self.conx = conx
+        # make cursor .fetch methods produce dicts by default, instead of tuples
+        self.conx.row_factory = dict_row
 
     @staticmethod
     async def connect() -> Self:

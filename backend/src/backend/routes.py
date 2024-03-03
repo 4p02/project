@@ -33,12 +33,12 @@ class JWTAuthBackend(AuthenticationBackend):
 
         parts = conn.headers["Authorization"].split(" ")
         if len(parts) != 2: raise AuthenticationError("Invalid authorization header")
-        scheme, token = parts
+        scheme, strtoken = parts
 
         if scheme.lower() != 'bearer': raise AuthenticationError("Invalid authorization header")
 
         try:
-            Token.decode(token)
+            token = Token.decode(strtoken)
         except JWTDecodeError as ex:
             raise AuthenticationError("Invalid or expired token")
 

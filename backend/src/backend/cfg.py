@@ -93,5 +93,6 @@ class Config():
 
     ollama: TypedDict("",
         endpoint=str,
+        bearer_token=NotRequired[Optional[str]],
         model=str,
     )

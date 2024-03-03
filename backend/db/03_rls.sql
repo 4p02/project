@@ -2,6 +2,7 @@ alter table private.users enable row level security;
 alter table public.documents enable row level security;
 alter table public.links enable row level security;
 alter table private.history enable row level security;
+alter table private.payments enable row level security;
 
 
 -- no reason to grant anon access; they can't query or update anything

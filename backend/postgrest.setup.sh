@@ -6,8 +6,6 @@ MIN_VERSION_POSTGRES_VERSION="9.6"
 # get postgres version
 PG_VERSION=$(psql --version | awk '{print $3}')
 
-CONFIG_FILE_NAME="postgrest.conf"
-
 version_compare () {
     if [[ $1 == $2 ]]
     then
@@ -53,7 +51,7 @@ function check_if_postgres_is_installed {
         echo "PostgreSQL is not installed"
         exit 1
     fi
-    
+
 }
 
 function install_postgrest {
@@ -67,18 +65,46 @@ function install_postgrest {
         echo "Mac OS X found and installing using brew"
         brew install postgrest
     elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
-        # Do something under GNU/Linux platform
-        echo "Linux found and installing using apt-get"
-        sudo apt-get install postgrest
+        if [ "$(uname -a | grep -icP 'debian|ubuntu|mint')" == "1" ]; then
+            # Do something under GNU/Linux platform
+            echo "Debian-based or Ubuntu-based distro; installing dependencies"
+            echo '$ sudo apt-get install ghc cabal-install libghc-postgresql-libpq-dev libpq-dev'
+            sudo apt-get install ghc cabal-install libghc-postgresql-libpq-dev libpq-dev
+
+            compile_from_source
+            exit
+        fi
+    else
+        echo "Couldn't automatically detect your platform..."
+        compile_from_source
+        exit
     fi
 }
 
+function compile_from_source {
+    echo "Compiling from source"
+    echo "Dependencies: git, ghc, cabal, libpq-dev, libpq"
+    echo "Praying to the dependency gods... good luck..."
+
+    git clone https://github.com/postgrest/postgrest.git /tmp/postgrest
+    cd /tmp/postgrest/
+    cabal update
+    cabal build
+
+    echo "Postgrest is fucking somewhere in /tmp/postgrest/dist/build/<platform>/ghc-version/postgrest-version/x/postgrest/build/postgrest/"
+    echo "Place it on your path"
+}
+
 function run_postgrest {
+    if [[ -e "backend/postgrest.conf" ]]; then
+        CONFIG_FILE="backend/postgrest.conf"
+    else
+        CONFIG_FILE="backend/postgrest.default.conf"
+    fi
+
     # get current path and add the default config file
-    postgrest $(pwd)/$CONFIG_FILE_NAME
+    postgrest "$CONFIG_FILE"
 }
 
 install_postgrest
 run_postgrest
-
-

@@ -33,39 +33,36 @@ export default class User {
     
     /* 
         fetch data on behalf of the user (token required)
-        @param {string} query - the query to be sent to the postgrest api
-        @param {string} directory - the directory to send the query to (first / is already included)
+        @param {string} directory - the directory to send the query to (first / is already included) (e.g. /users)
         @return {Promise} - the response from the postgrest api
     */
     
-    async formatAuthenticatedPostgrestQuery(query, directory) {
+    async formatAuthenticatedPostgrestQuery(directory) {
+
         if (this.token === null) {
             throw new Error("Token is null");
         }
         const response = await fetch(`${BACKEND_API_URL}/${directory}`, {
-            method: 'POST',
+            method: 'GET',
             headers: {
-                'Content-Type': 'application/json',
                 'Authorization': `Bearer ${this.token}`
             },
-            body: JSON.stringify(query)
         });
         return response;
     }
 
     /*
         fetch data on behalf of the anonymous user (no token required)
-        @param {string} query - the query to be sent to the postgrest api
-        @param {string} directory - the directory to send the query to (first / is already included)
+        @param {string} directory - the directory to send the query to (first / is already included) (e.g. /users)
         @return {Promise} - the response from the postgrest api
     */
-    async formatNonAuthenticatedPostgrestQuery(query, directory) {
+    async formatNonAuthenticatedPostgrestQuery(directory) {
         const response = await fetch(`${BACKEND_API_URL}/${directory}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(query)
+
         });
         return response;
     }

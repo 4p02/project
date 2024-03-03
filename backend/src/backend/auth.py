@@ -33,6 +33,9 @@ class Token(NamedTuple):
     nbf: datetime
     exp: datetime
 
+    @property
+    def role(self) -> str: return config.db.pgrest_auth_role
+
     def new(uid: int) -> Self:
         return Token(
             uid=uid,
@@ -45,11 +48,16 @@ class Token(NamedTuple):
         data = self._asdict()
         data["nbf"] = int(data["nbf"].timestamp())
         data["exp"] = int(data["exp"].timestamp())
+        data["role"] = self.role
         return JWT().encode(data, JWT_KEY, alg="HS512")
 
     def decode(token: str) -> Self:
         """May raise JWTDecodeError if expired or used before valid"""
         data = JWT().decode(token, JWT_KEY, algorithms=["HS512"])
+        data = dict(
+            (key, val) for (key, val) in data.items()
+            if key in Token.__annotations__.keys()
+        )
         try:
             data["nbf"] = datetime.fromtimestamp(data["nbf"], tz=timezone.utc)
             data["exp"] = datetime.fromtimestamp(data["exp"], tz=timezone.utc)

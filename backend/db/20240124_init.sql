@@ -39,5 +39,5 @@ create table public.articles (
 -- public
 create table public.links (
     given_link text not null,
-    shortened_link unique text not null
+    shortened_link text unique not null
 );

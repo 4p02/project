@@ -73,9 +73,9 @@ class Routes:
         self.router.add_api_route("/auth/login", self.login_route, methods=["POST"])
         self.router.add_api_route("/auth/refresh", self.refresh_route, methods=["POST"])
 
-        self.router.add_api_route("/summarize/article", self.summarize_article_route, methods=["POST"], dependencies=[Depends(api_key_auth)])
-        self.router.add_api_route("/summarize/video", self.summarize_video_route, methods=["POST"], dependencies=[Depends(api_key_auth)])
-        self.router.add_api_route("/shorten", self.shorten_route, methods=["POST"], dependencies=[Depends(api_key_auth)])
+        self.router.add_api_route("/summarize/article", self.summarize_article_route, methods=["POST"])
+        self.router.add_api_route("/summarize/video", self.summarize_video_route, methods=["POST"])
+        self.router.add_api_route("/shorten", self.shorten_route, methods=["POST"])
 
         self.app.include_router(self.router)
         self.app.add_middleware(AuthenticationMiddleware, backend=JWTAuthBackend())
@@ -127,7 +127,6 @@ class Routes:
         return f'<h1>Shorten Page</h1>'
 
 
-
     @handle_and_log_exceptions(reraise=HTTPException(500, "Internal server error :("))
     def summarize_article_route(self, form_data: Summarize):
         """
@@ -135,8 +134,10 @@ class Routes:
         """
         return f"todo"
 
+
+    @requires(["authenticated"])
     @handle_and_log_exceptions(reraise=HTTPException(500, "Internal server error :("))
-    def summarize_video_route(self, form_data: Summarize):
+    def summarize_video_route(self, request: Request, form_data: Summarize):
         """
         Summerize a video from a URL.
         """

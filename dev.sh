@@ -6,6 +6,8 @@ set -o pipefail
 self_path=$(dirname "$0")
 self=$(basename "$0")
 
+cd "$self_path"
+
 function elog { printf '%s\n' "$self: $*" >&2; }
 function log { printf '%s\n' "$self: $*"; }
 
@@ -40,10 +42,10 @@ log \$ backend-migrate
 backend-migrate 2>&1 | sed 's/^\(.*\)$/\x1b\[95m\1\x1b\[39m/'
 
 echo
-if [[ -e "$self_path/backend/postgrest.conf" ]]; then
-  postgrest_cfg="$self_path/backend/postgrest.conf"
+if [[ -e "backend/postgrest.conf" ]]; then
+  postgrest_cfg="backend/postgrest.conf"
 else
-  postgrest_cfg="$self_path/backend/postgrest.default.conf"
+  postgrest_cfg="backend/postgrest.default.conf"
 fi
 log starting postgrest
 log \$ postgrest $postgrest_cfg

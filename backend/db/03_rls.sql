@@ -15,6 +15,10 @@ create policy public_users_rls on private.users as restrictive for select
     using (id = (current_setting('request.jwt.claims', true)::json->>'uid')::int);
 
 
+create policy private_history_rls on private.history as restrictive for all
+    using (user_id = (current_setting('request.jwt.claims', true)::json->>'uid')::int);
+
+
 grant select on public.documents to pgrest_auth;
 grant select on public.documents to pgrest_anon;
 

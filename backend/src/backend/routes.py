@@ -12,8 +12,8 @@ from starlette.requests import HTTPConnection
 
 from jwt.exceptions import JWTDecodeError
 
-from backend import config
-from backend.auth import api_key_auth, google, google_callback, login, register, Token
+from backend import config, logger
+from backend.auth import Token, google, google_callback, login_user, register_user
 from backend.db import Database
 from backend.models import Login, Register, Summarize
 from backend.misc import handle_and_log_exceptions
@@ -78,6 +78,7 @@ class Routes:
         self.router.add_api_route("/shorten", self.shorten_route, methods=["POST"])
 
         self.app.include_router(self.router)
+        # todo: make this output 401 or 403 instead of a generic 400
         self.app.add_middleware(AuthenticationMiddleware, backend=JWTAuthBackend())
 
 
@@ -88,6 +89,7 @@ class Routes:
         """
         return google(request=request)
 
+
     @handle_and_log_exceptions(reraise=HTTPException(500, "Internal server error :("))
     def google_callback_route(self, request: Request):
         """
@@ -95,28 +97,42 @@ class Routes:
         """
         return google_callback(request=request)
 
-    @handle_and_log_exceptions(reraise=HTTPException(500, "Internal server error :("))
-    def register_route(self, form_data: Register):
+
+    # @handle_and_log_exceptions(reraise=HTTPException(500, "Internal server error :("))
+    async def register_route(self, form: Register):
         """
         Registers a new user account with an email and password.
         """
-        return register(form_data.email, form_data.password, form_data.full_name)
+        user = await register_user(
+            self.db,
+            email=form.email, password=form.password, fullname=form.fullname
+        )
 
-    @handle_and_log_exceptions(reraise=HTTPException(500, "Internal server error :("))
-    def login_route(self, form_data: Login):
+        if user is not None:
+            return {"token": Token.new(user["id"]).encode()}
+
+        raise HTTPException(400, "Email is already in use.")
+
+
+    # @handle_and_log_exceptions(reraise=HTTPException(500, "Internal server error :("))
+    async def login_route(self, form: Login):
         """
         Logins into a user account with an email and password.
         """
-        print(form_data)
-        return login(form_data.email, form_data.password)
+        if (user := await login_user(self.db, email=form.email, password=form.password)) is not None:
+            return {"token": Token.new(user["id"]).encode()}
+
+        raise HTTPException(401, "Invalid email or password.")
+
 
     @requires(["authenticated"])
-    @handle_and_log_exceptions(reraise=HTTPException(500, "Internal server error :("))
+    # @handle_and_log_exceptions(reraise=HTTPException(500, "Internal server error :("))
     def refresh_route(self, request: Request):
         """
-        Generates a new JWT token for the user.
+        Renews the expiration date on a JWT token.
         """
-        return f'<h1>Get New Token Page</h1>'
+        token: Token = request.user.token
+        return {"token": Token.new(token.uid).encode()}
 
 
     @handle_and_log_exceptions(reraise=HTTPException(500, "Internal server error :("))

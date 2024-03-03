@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta, timezone
-from typing import TypedDict, Self, NamedTuple, Union
+from typing import TypedDict, Self, NamedTuple, Union, Optional
 
 from authlib.integrations.starlette_client import OAuth
 from authlib.integrations.starlette_client import OAuthError
@@ -11,7 +11,9 @@ from jwt import JWT
 from jwt.jwk import OctetJWK
 from jwt.exceptions import JWTDecodeError
 
-from backend import config
+from psycopg.rows import tuple_row
+
+from backend import config, logger
 from backend.db import Database
 
 
@@ -68,34 +70,62 @@ class Token(NamedTuple):
 
 
 def hash_password(password: str) -> str:
-    hashed_password = bcrypt.hashpw(password, bcrypt.gensalt(rounds=config.auth.bcrypt_rounds))
-    return hashed_password
+    """
+    Hashes the given password with bcrypt.
+
+    Note: this truncates the password to 72 chars; do not use longer passwords.
+    """
+    return bcrypt.hashpw(
+        password=password.encode("utf-8"),
+        salt=bcrypt.gensalt(rounds=config.auth.bcrypt_rounds)
+    ).decode("utf-8")
 
 
 def check_password(password: str, hashed_password: str) -> bool:
-    return bcrypt.checkpw(password, hashed_password)
-
-
-#when register is called, the email, name and password are stored into a database taboe
-def register(email: str, password: str, full_name: str) -> bool:
-    try:
-        # Call the register method from Routes
-        database.register_user(full_name, email, password)
-        return {"data": "true"}  # Return the result from the register method
-    except Exception as e:
-        # Handle any exceptions that occur during registration
-        print("Error occurred during registration:", e)
-        return False
-
-
-def login(email: str, password: str) -> bool:
     """
-    login function, will check if the email and password pair exists in the db
+    Determines if the password is equal to the bcrypt hash string.
+
+    Note: this truncates the password to 72 chars; do not use longer passwords.
     """
-    if(database.login_user(email, password)):
-        return {"login": "true"}
-    else:
-        return {"login": "false"}
+    return bcrypt.checkpw(password.encode("utf-8"), hashed_password.encode("utf-8"))
+
+
+# todo: consider making a User model for these methods to return
+
+async def login_user(db: Database, email: str, password: str) -> Optional[dict]:
+    """May raise psycopg.Error on database error."""
+
+    user = (await (await db.cursor().execute(
+        """select id, email, fullname, password from private.users where email = %s""",
+        (email, )
+    )).fetchone())
+
+    if user is None or not check_password(password, user["password"]):
+        return None
+
+    del user["password"]
+    return user
+
+
+async def register_user(db: Database, email: str, password: str, fullname: str) -> Optional[dict]:
+    async with db.transaction() as tx:  # fixme: this doesn't actually start a transaction!
+        # don't register an email twice as it'll fail the uniqueness check
+        cur = db.cursor()
+        rows = (await cur.execute(
+            """select email from private.users where email = %s""",
+            (email, )
+        )).rowcount
+
+        if rows != 0: return None
+
+        user = (await (await cur.execute(
+            """
+            insert into private.users (email, password, fullname) values (%s, %s, %s)
+            returning id, created_at, email, fullname;
+            """,
+            (email, hash_password(password), fullname)
+        )).fetchone())
+        return user
 
 
 async def google(request: Request):

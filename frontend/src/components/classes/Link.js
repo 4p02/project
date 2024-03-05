@@ -2,7 +2,7 @@
 
 
 /* 
-    abstract class for link (shortened link and summerize)
+    abstract class for link (shortened link and summarize)
     @param id: the id of the object
     @param shortenedUrl: the shortened url
     @param originalUrl: the original url

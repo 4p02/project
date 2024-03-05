@@ -5,7 +5,7 @@ import { FaCopy } from "react-icons/fa";
 import { motion } from "framer-motion"
 import FormButton from "../components/auth/FormButton.js";
 import { GlobalContext } from "../components/context/GlobalContext.jsx";
-import Summerize from "../api/Summerize.js";
+import Summarize from "../api/Summarize.js";
 
 const Home = () => {
   const [inputURLValue, setInputURLValue] = useState("");
@@ -32,13 +32,13 @@ const Home = () => {
       return;
     }
     const userObj = userContext.user || null;
-    const summaryObj = new Summerize(userObj.token || null);
+    const summaryObj = new Summarize(userObj.token || null);
     // check if link is yt video or not 
     const youtubeRegex = /^(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
     if (youtubeRegex.test(inputURLValue)) {
-        const response = await summaryObj.summerizeVideo(inputURLValue);
+        const response = await summaryObj.summarizeVideo(inputURLValue);
     } else {
-      const response = await summaryObj.summerizeArticle(inputURLValue);
+      const response = await summaryObj.summarizeArticle(inputURLValue);
     }
 
 

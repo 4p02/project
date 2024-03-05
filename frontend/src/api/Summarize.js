@@ -1,13 +1,13 @@
 import { BACKEND_API_URL } from "../lib/Constants";
 
-export default class Summerize {
+export default class Summarize {
     constructor(token) {
         this.token = token;
     }
     getToken() {
         return this.token;
     }
-    async summerizeArticle(link) {
+    async summarizeArticle(link) {
         const response = await fetch(`${BACKEND_API_URL}/summarize/article`, {
             method: 'POST',
             headers: {
@@ -19,7 +19,7 @@ export default class Summerize {
         });
         return response;
     }
-    async summerizeVideo(link) {
+    async summarizeVideo(link) {
         const response = await fetch(`${BACKEND_API_URL}/summarize/video`, {
             method: 'POST',
             headers: {

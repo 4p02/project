@@ -1,4 +1,4 @@
-class Summerize extends Link {
+class Summarize extends Link {
     
     constructor(id, shortenedUrl, originalUrl, summary) {
         super(id, shortenedUrl, originalUrl);

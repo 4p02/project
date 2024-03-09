@@ -1,15 +1,29 @@
-import { BACKEND_API_URL } from '../lib/Constants.js';
+import { POSTGREST_API_URL, BACKEND_API_URL } from '../lib/Constants.js';
+import { PostgrestClient} from "@supabase/postgrest-js";
 
 export default class User {
-    // maybe store links
     email;
     fullName;
-    links;
+    postgrestClient;
     constructor(token) {
         this.token = token;
-        this.links = [];
-    }
+        const checkIfTokenIsValid = (token) => {
+            if (token === null) {
+                return false;
+            }
+            // maybe add a route to the backend
+            return true;
+        }
 
+        this.postgrestClient = new PostgrestClient(POSTGREST_API_URL, checkIfTokenIsValid(token) ? 
+        {headers: {
+            Authorization: `Bearer ${token}`
+        }, schema: "public"} : {schema: "public"}
+        
+        ).catch(error => {
+            console.error(error);
+        });
+    }
     getEmail() {
         return this.email;
     }
@@ -19,51 +33,31 @@ export default class User {
     getToken() {
         return this.token;
     }
-    getLinks() {
-        return this.links;
-    }
 
-    getEmail() {
-        // use the token to get the email
-    }
-
-    checkValidToken() {
-
-    }
-    
-    /* 
-        fetch data on behalf of the user (token required)
-        @param {string} directory - the directory to send the query to (first / is already included) (e.g. /users)
-        @return {Promise} - the response from the postgrest api
-    */
-    
-    async formatAuthenticatedPostgrestQuery(directory) {
-
-        if (this.token === null) {
-            throw new Error("Token is null");
-        }
-        const response = await fetch(`${BACKEND_API_URL}/${directory}`, {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${this.token}`
-            },
-        });
-        return response;
+    getPostGrestClient() {
+        return this.postgrestClient;
     }
 
     /*
-        fetch data on behalf of the anonymous user (no token required)
-        @param {string} directory - the directory to send the query to (first / is already included) (e.g. /users)
-        @return {Promise} - the response from the postgrest api
+        Get more links from the user
+        @param {int} limit - the number of links to get default 10
+        @param {int} offset - the number of links to skip
+        @return {Array} - an array of links
     */
-    async formatNonAuthenticatedPostgrestQuery(directory) {
-        const response = await fetch(`${BACKEND_API_URL}/${directory}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-
+    getLinks(limit, offset) {
+        return this.postgrestClient.from('links').select().range(offset, limit).then(response => {
+            return response.body;
+        }).catch(error => {
+            console.log(error);
+            return "error";
         });
-        return response;
+    }
+
+    
+    
+    
+    
+    deleteAccount() {
+
     }
 }

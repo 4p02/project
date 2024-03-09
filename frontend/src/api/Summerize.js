@@ -7,17 +7,18 @@ export default class Summerize {
     getToken() {
         return this.token;
     }
-    async summerizeArticle(link) {
+    async summerizeArticle(url) {
         const response = await fetch(`${BACKEND_API_URL}/summarize/article`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                url: link
+                url: url
             })
         });
-        return response;
+        return await response.text()
+        
     }
     async summerizeVideo(link) {
         const response = await fetch(`${BACKEND_API_URL}/summarize/video`, {

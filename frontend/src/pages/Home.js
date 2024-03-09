@@ -32,13 +32,22 @@ const Home = () => {
       return;
     }
     const userObj = userContext.user || null;
-    const summaryObj = new Summerize(userObj.token || null);
+    const summaryObj = new Summerize();
     // check if link is yt video or not 
     const youtubeRegex = /^(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
     if (youtubeRegex.test(inputURLValue)) {
-        const response = await summaryObj.summerizeVideo(inputURLValue);
+      const response = await summaryObj.summerizeVideo(inputURLValue);
+      
     } else {
-      const response = await summaryObj.summerizeArticle(inputURLValue);
+      const responseJSON = await summaryObj.summerizeArticle(inputURLValue);
+      console.log(responseJSON);
+      if (responseJSON === null || responseJSON === undefined || responseJSON.shortLink === null || responseJSON.summary === null) {
+        toast.error("Error #1");
+        return;
+      }
+      setURL(responseJSON.shortLink);
+      setSummary(responseJSON.summary);
+      
     }
 
 

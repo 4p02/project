@@ -1,7 +1,41 @@
+
+import { useEffect, useContext } from "react";
+import { GlobalContext } from "../components/context/GlobalContext";
 import HistoryCard from "../components/HistoryCard";
 import mockHistory from "../mockHistory.js";
+import { PAGE_SIZE } from "../lib/Constants.js";
 
 const History = () => {
+  const userContext = useContext(GlobalContext);
+  const [history, setHistory] = useState([]);
+  const [page, setPage] = useState(0);
+  useEffect(() => {
+    // userContext.user 
+    if (!userContext.user) {
+      console.error("User not logged in! (something went wrong with context)")
+    } else {
+      userContext.user.getLinks(PAGE_SIZE, page * PAGE_SIZE).then(response => {
+        console.log(response);
+      }).catch(error => {
+        console.error(error);}
+        )
+    }
+  }, []);
+
+  const loadMore = () => {
+    setPage(page + 1);
+    if (!userContext.user) {
+      console.error("User not logged in! (something went wrong with context)")
+      return;
+    }
+    userContext.user.getLinks(PAGE_SIZE, page * PAGE_SIZE).then(response => {
+      console.log(response);
+    }).catch(error => {
+      console.error(error);
+    })
+
+  }
+
 
   return (
     <div className="page lg-max:p-8 lg:p-20 xl:p-28">

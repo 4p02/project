@@ -1,6 +1,7 @@
 from typing import Optional, Tuple
 
 from fastapi import APIRouter, Depends, Request, FastAPI, HTTPException
+from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 
 from starlette.authentication import (
@@ -17,6 +18,7 @@ from backend.auth import Token, google, google_callback, login_user, register_us
 from backend.db import Database
 from backend.models import Login, Register, Summarize
 from backend.misc import handle_and_log_exceptions
+from urllib.parse import urlparse
 
 
 class JWTUser(BaseUser):
@@ -66,6 +68,7 @@ class Routes:
                 "email": "someone@example.com"
             }
         )
+        
 
         self.router.add_api_route("/google", self.google_route, methods=["GET"])
         self.router.add_api_route("/google/callback", self.google_callback_route, methods=["GET"])
@@ -78,6 +81,8 @@ class Routes:
         self.router.add_api_route("/shorten", self.shorten_route, methods=["POST"])
 
         self.app.include_router(self.router)
+        # we need this middleware to handle CORS
+        self.app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_credentials=True, allow_methods=["*"], allow_headers=["*"])
         # todo: make this output 401 or 403 instead of a generic 400
         self.app.add_middleware(AuthenticationMiddleware, backend=JWTAuthBackend())
 
@@ -148,7 +153,16 @@ class Routes:
         """
         Summerize an article from a URL.
         """
-        return f"todo"
+        url = form_data.url
+        
+        # check if url is localhost or an ip address which is not allowed for security things
+        if urlparse(url).hostname in ["localhost", "127.0.0.1", "0.0.0.0"]:
+            raise HTTPException(400, "Invalid URL")
+        elif urlparse(url).hostname is None:
+            raise HTTPException(400, "Invalid URL")
+        
+        print(url)
+        return JSONResponse(content={"summary": "todo", "shortLink": "todo"}, headers={"Access-Control-Allow-Origin": "*", "content-type": "application/json"})
 
 
     @requires(["authenticated"])
@@ -157,4 +171,6 @@ class Routes:
         """
         Summerize a video from a URL.
         """
+        url = form_data.url
+        
         return f"todo"

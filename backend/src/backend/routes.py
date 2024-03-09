@@ -148,7 +148,6 @@ class Routes:
         return f'<h1>Shorten Page</h1>'
 
 
-    @handle_and_log_exceptions(reraise=HTTPException(500, "Internal server error :("))
     def summarize_article_route(self, form_data: Summarize):
         """
         Summerize an article from a URL.

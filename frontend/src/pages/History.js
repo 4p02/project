@@ -1,5 +1,5 @@
 
-import { useEffect, useContext } from "react";
+import { useEffect, useContext, useState } from "react";
 import { GlobalContext } from "../components/context/GlobalContext";
 import HistoryCard from "../components/HistoryCard";
 import mockHistory from "../mockHistory.js";

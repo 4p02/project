@@ -17,7 +17,7 @@ export default class Summerize {
                 url: url
             })
         });
-        return await response.text()
+        return await response.json()
         
     }
     async summerizeVideo(link) {

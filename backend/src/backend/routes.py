@@ -1,8 +1,9 @@
-from typing import Optional, Tuple
+from typing import Optional, Tuple, Annotated
 
-from fastapi import APIRouter, Depends, Request, FastAPI, HTTPException
+from fastapi import APIRouter, Depends, Header, Request, FastAPI, HTTPException, Security
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.security import HTTPBearer
 
 from starlette.authentication import (
     AuthCredentials, AuthenticationBackend, AuthenticationError, BaseUser,
@@ -55,6 +56,17 @@ class Routes:
     def __init__(self, db: Database):
         self.db = db
 
+        # Because fastapi is designed very well, it flagrantly ignores any
+        # starlette middleware that the user defines, and decides on it's own
+        # accord to fucking reimplement the entirety of AuthenticationBackend,
+        # with no recourse for backwards compatability, because fuck you that's
+        # why. Using any middleware means it's functionally excluded from
+        # swagger and openapi. So, define a fucking dummy middleware that does
+        # fuck-all for authentication to appease the silly swagger gods, all so
+        # a fucking "Authorize" popup shows on swagger. Fuck this shit man.
+        def fastapi_fake_auth(x: Annotated[Header, Security(HTTPBearer(auto_error=False))]):
+            return x
+
         self.router = APIRouter()
         self.app = FastAPI(
             title="Summarily",
@@ -66,7 +78,8 @@ class Routes:
             contact={
                 "name": "Someone",
                 "email": "someone@example.com"
-            }
+            },
+            dependencies=[Depends(fastapi_fake_auth)],
         )
 
 

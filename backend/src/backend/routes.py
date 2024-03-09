@@ -68,7 +68,7 @@ class Routes:
                 "email": "someone@example.com"
             }
         )
-        
+
 
         self.router.add_api_route("/google", self.google_route, methods=["GET"])
         self.router.add_api_route("/google/callback", self.google_callback_route, methods=["GET"])
@@ -83,8 +83,16 @@ class Routes:
         self.app.include_router(self.router)
         # we need this middleware to handle CORS
         self.app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_credentials=True, allow_methods=["*"], allow_headers=["*"])
-        # todo: make this output 401 or 403 instead of a generic 400
-        self.app.add_middleware(AuthenticationMiddleware, backend=JWTAuthBackend())
+
+        # there's no way to use lambda type annotations, and on_error is kwargs
+        def auth_middleware_handle_err(conn: HTTPConnection, ex: Exception):
+            return HTTPException(401, str(ex))
+
+        self.app.add_middleware(
+            AuthenticationMiddleware,
+            backend=JWTAuthBackend(),
+            on_error=auth_middleware_handle_err,
+        )
 
 
     @handle_and_log_exceptions(reraise=HTTPException(500, "Internal server error :("))

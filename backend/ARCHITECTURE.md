@@ -30,8 +30,8 @@ backend dependencies:
 
 ### postgrest
 **postgrest**: Offers a flexible way to access postgrest database tables over an HTTP REST API. It handles and takes advantage of:
-- Querying tables with `select`, `insert`, `update`, and `delete` queries.
-- Allowing downloading or uploading binary files (like documents).
+- Querying tables with `select`, `insert`, `update`, and `delete` queries over HTTP.
+- Allowing downloading or uploading binary table fields as files (e.g. documents or images).
 - Users are authenticated via JWT tokens issued by backend. The JWT token specifics which role is impersonated, presently it defaults to `pgrest_auth`.
 - Anonymous access is allowed when a token isn't provided, with instead using the `pgrest_anon` role to control coarse table access.
 - Row-level security policies which defines which rows a given role is allowed to access.
@@ -39,14 +39,20 @@ backend dependencies:
 
 It obviously depends on the **postgres** database running, which is the main database engine we use:
 - It supports the standard SQL language you're used to, with a few caveats about certain type names (e.g. use `text` for strings, `bytea` for binary text)
-- It has a concept of users and roles. The user is what you specify in the connection string and is how you login. The role specifics additional table or row permissions on top of your user permissions. Roles can be switched to and from while in a postgres session.
-- We configure our tables so that only specific tables and rows can be accessed by a given role.
+- It has a concept of users and roles. The user is what you specify in the connection string and is how you authenticate. The role specifics additional table or row permissions on top of your user permissions. Roles can be switched to and from while in a postgres session (this is the main feature that makes postgrest work).
+- We configure our tables so that only specific tables and rows can be accessed by a given role with `grant` clauses that specify which of the primitive operations (`select`, `insert`, `update`, and `delete`) can be performed and on which columns can be affected by those queries
+- In addition to `grant` clauses, we also set row-level security which constrains which rows a user or role is able to view and change. Note that row-level security, as the name implies, only allows changing which rows are visible to the current user/role, and it cannot constrain columns (use `grant` clauses, or custom views for that).
 
 Both of these services are installed and configured in the setup instructions.
 
 
 ### Ollama
 **Ollama**: Provides an HTTP REST API similar to that of ClosedAI's API. It's primary purpose is to perform chat completions on a selected model.
+
+### Ancillary
+**Apache**: A HTTP server that blends all our services together on production, and serves them alongside frontend. It is responsible for acting as the main HTTP gateway, and internally rerouting requests to the appropriate service, based on the subdomain and HTTP request path.
+
+**systemd**: Our service manager on production, which is responsible for running all the aforementioned services, in the correct order. It also handles and classifies logging in production from all the services it managers, supports setting log verbosity levels, and exposes an easy management interface for parsing and searching log files. Services are restarted when the server restarts, the server is updated, or if it ever happens that any service crashes.
 
 
 ## Directory Structure

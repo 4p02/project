@@ -33,6 +33,7 @@ const RegisterView = ({ viewToggle }) => {
     toast.success("Account created successfully!");
     const token = response.token;
     localStorage.setItem("token", token);
+    toast.success("Registered successfully!");
   }
 
   const onGoogleRegisterClick = () => {

@@ -6,24 +6,39 @@ import GoogleButton from "./GoogleButton.js";
 import { LoginUser } from "../../api/Auth.js";
 import { GlobalContext } from "../context/GlobalContext.jsx";
 import { BACKEND_API_URL } from "../../lib/Constants.js";
+import toast from "react-hot-toast";
 
 const LoginView = ({ viewToggle }) => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState(false);
   const userContext = useContext(GlobalContext);
   useEffect(() => {
     // check if token exists here so we can avoid this view
     const userObj = userContext.user;
 
   }, [])
-  const onLogInClick = () => {
-    const response = LoginUser(email, password)
-    // handle response
+  const onLogInClick = async () => {
+    const response = await LoginUser(email, password);
+    console.log(response);
+    if (!response.token) {
+      setError(true);
+      return;
+    }
+    localStorage.setItem("token", response.token);
+    toast.success("Logged in successfully!");
+    navigate("/");
   }
 
   const onGoogleLogin = () => {
     window.location.href = `${BACKEND_API_URL}/auth/google`;
+  }
+  const onSetEmail = (event) => {
+    setEmail(event.target.value);
+  }
+  const onSetPassword = (event) => {
+    setPassword(event.target.value);
   }
 
   const onGuestClick = () => {
@@ -33,7 +48,7 @@ const LoginView = ({ viewToggle }) => {
   return (
     <div className="panel flex flex-col items-center px-12 w-full *:mb-4 py-6">
       <Input
-        onChange={(event) => setEmail(event.target.value)}
+        onChange={onSetEmail}
         value={email}
         width="w-full"
         placeholder="Enter your email..."
@@ -41,7 +56,7 @@ const LoginView = ({ viewToggle }) => {
       />
       
       <Input
-        onChange={(event) => setPassword(event.target.value)}
+        onChange={onSetPassword}
         value={password}
         width="w-full"
         placeholder="Enter your password..."

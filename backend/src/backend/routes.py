@@ -182,6 +182,8 @@ class Routes:
             raise HTTPException(400, "Invalid URL")
         
         print(url)
+        short_url = "todo"
+        # add details to database
         return JSONResponse(content={"summary": "todo", "shortLink": "todo"}, headers={"Access-Control-Allow-Origin": "*", "content-type": "application/json"})
 
 

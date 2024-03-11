@@ -33,6 +33,7 @@ create table public.documents (
     source_url text default null,
     file bytea default null,
     title text default null,
+    image bytea default null,
     body bytea default null,
     summary bytea default null
 );

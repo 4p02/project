@@ -108,6 +108,9 @@ class Routes:
         )
 
 
+    def get_app(self) -> FastAPI:
+        return self.app
+
     @handle_and_log_exceptions(reraise=HTTPException(500, "Internal server error :("))
     def google_route(self, request: Request):
         """

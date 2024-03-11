@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
-import { useEffect, useState, useContext } from "react";
-import Input from "../Input.js";
+import { useEffect, useState, useContext, useRef } from "react";
+import Input from "../inputs/Input.js";
 import FormButton from "./FormButton.js";
 import GoogleButton from "./GoogleButton.js";
 import { GlobalContext } from "../context/GlobalContext.jsx";
@@ -14,7 +14,9 @@ const RegisterView = ({ viewToggle }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const userContext = useContext(GlobalContext);
+  const [isPasswordGood, setIsPasswordGood] = useState(false);
+  const [error, setError] = useState(false);
+  
   useEffect(() => {
     // check if token exists here so we can avoid this view
   }, [])
@@ -30,42 +32,61 @@ const RegisterView = ({ viewToggle }) => {
   const onGuestClick = () => {
     navigate("/")
   }
-
+  const onSetName = (event) => {
+    setName(event.target.value);
+  }
+  const onSetSurname = (event) => {
+    setSurname(event.target.value);
+  }
+  const onSetEmail = (event) => {
+    setEmail(event.target.value);
+  }
+  const onSetPassword = (event) => {
+    setPassword(event.target.value);
+  }
+  const onBlurPassword = () => {}
+  const onSetConfirmPassword = (event) => {
+    setConfirmPassword(event.target.value);
+  }
+ 
   return (
     <div className="panel phablet-max:bg-white flex flex-col items-center px-12 w-full *:mb-4 py-6">
       <div className="form-ui-group">
         <Input
-          onChange={(event) => setName(event.target.value)}
+          onChange={onSetName}
           value={name}
           width="form-ui-group-element-width"
           placeholder="John"
           label="Name"
         />
         <Input
-          onChange={(event) => setSurname(event.target.value)}
+          onChange={onSetSurname}
           value={surname}
           width="form-ui-group-element-width"
           placeholder="Doe"
           label="Surname"
         />
       </div>
-      <Input
-        onChange={(event) => setEmail(event.target.value)}
+      <Input 
+        onChange={onSetEmail}
         value={email}
         width="w-full"
-        placeholder="john-doe@gmail.com"
+        type={"email"}
+        placeholder="Enter your email..."
         label="Email"
       />
       <Input
-        onChange={(event) => setPassword(event.target.value)}
+        onChange={onSetPassword}
         value={password}
         width="w-full"
         placeholder="Enter a password..."
         type="password"
         label="Password"
+        onBlur={onBlurPassword}
+
       />
       <Input
-        onChange={(event) => setConfirmPassword(event.target.value)}
+        onChange={onSetConfirmPassword}
         value={confirmPassword}
         width="w-full"
         placeholder="Re-enter your password..."
@@ -77,6 +98,7 @@ const RegisterView = ({ viewToggle }) => {
       <FormButton
         onClick={onRegisterClick}
         width="w-full"
+        disabled={error}
       >
         Register
       </FormButton>

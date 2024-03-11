@@ -1,5 +1,5 @@
 import toast from "react-hot-toast";
-import Input from "../components/Input.js";
+import Input from "../components/inputs/Input.js";
 import { useState, useContext } from "react";
 import { FaCopy } from "react-icons/fa";
 import { motion } from "framer-motion"

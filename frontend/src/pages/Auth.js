@@ -18,6 +18,7 @@ const Auth = () => {
 
     if (isLoggedIn) navigate("/");
     if (state?.isSignIn) setLoginPageOrRegister(false);
+    
   }, [])
 
   return (

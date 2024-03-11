@@ -1,4 +1,4 @@
-import Input from "../Input.js"
+import Input from "../inputs/Input.js"
 import { useEffect, useState, useContext } from "react"
 import { useNavigate } from "react-router-dom";
 import FormButton from "./FormButton.js";

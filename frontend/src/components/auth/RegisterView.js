@@ -9,6 +9,7 @@ import { RegisterUser } from "../../api/Auth.js";
 import { EmailInput } from "../inputs/EmailInput.js";
 import { PasswordInput } from "../inputs/PasswordValidInput.js";
 import { ConfirmPasswordInput } from "../inputs/ConfirmPasswordInput.js";
+import toast from "react-hot-toast";
 
 const RegisterView = ({ viewToggle }) => {
   const navigate = useNavigate();
@@ -23,9 +24,15 @@ const RegisterView = ({ viewToggle }) => {
   useEffect(() => {
     // check if token exists here so we can avoid this view
   }, [])
-  const onRegisterClick = () => {
-    const response = RegisterUser(email, password, `${name} ${surname}`)
-    // handle response
+  const onRegisterClick = async () => {
+    const response = await RegisterUser(email, password, `${name} ${surname}`);
+    if (response == "error") {
+      toast.error("Email is already in use");
+      return;
+    }
+    toast.success("Account created successfully!");
+    const token = response.token;
+    localStorage.setItem("token", token);
   }
 
   const onGoogleRegisterClick = () => {

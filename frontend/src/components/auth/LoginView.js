@@ -7,17 +7,28 @@ import { LoginUser } from "../../api/Auth.js";
 import { GlobalContext } from "../context/GlobalContext.jsx";
 import { BACKEND_API_URL } from "../../lib/Constants.js";
 import toast from "react-hot-toast";
+import User from "../../api/User.js";
 
 const LoginView = ({ viewToggle }) => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(false);
-  const userContext = useContext(GlobalContext);
+  const {state, dispatch} = useContext(GlobalContext);
   useEffect(() => {
     // check if token exists here so we can avoid this view
-    const userObj = userContext.user;
-
+    const token = localStorage.getItem("token");
+    if (token && !state || !state.user) {
+        // check if token is valid (maybe in the constructor)
+        const userObj = new User(token); 
+        dispatch({
+          type: "SET_USER",
+          payload: {
+            user: userObj,
+          },
+        })
+    }
+    navigate("/");
   }, [])
   const onLogInClick = async () => {
     const response = await LoginUser(email, password);
@@ -28,6 +39,8 @@ const LoginView = ({ viewToggle }) => {
     }
     localStorage.setItem("token", response.token);
     toast.success("Logged in successfully!");
+    const userObj = new User(response.token);
+    dispatch({type: "SET_USER", payload: userObj});
     navigate("/");
   }
 

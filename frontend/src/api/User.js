@@ -18,11 +18,7 @@ export default class User {
         this.postgrestClient = new PostgrestClient(POSTGREST_API_URL, checkIfTokenIsValid(token) ? 
         {headers: {
             Authorization: `Bearer ${token}`
-        }, schema: "public"} : {schema: "public"}
-        
-        ).catch(error => {
-            console.error(error);
-        });
+        }, schema: "public"} : {schema: "public"});
     }
     getEmail() {
         return this.email;

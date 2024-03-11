@@ -10,19 +10,32 @@ import { EmailInput } from "../inputs/EmailInput.js";
 import { PasswordInput } from "../inputs/PasswordValidInput.js";
 import { ConfirmPasswordInput } from "../inputs/ConfirmPasswordInput.js";
 import toast from "react-hot-toast";
+import User from "../../api/User.js";
 
 const RegisterView = ({ viewToggle }) => {
   const navigate = useNavigate();
+  const {state, dispatch} = useContext(GlobalContext);
   const [name, setName] = useState("");
   const [surname, setSurname] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [isPasswordGood, setIsPasswordGood] = useState(false);
   const [error, setError] = useState(false);
   
   useEffect(() => {
     // check if token exists here so we can avoid this view
+    const token = localStorage.getItem("token");
+    if (token && !state || !state.user) {
+        // check if token is valid (maybe in the constructor)
+        const userObj = new User(token); 
+        dispatch({
+          type: "SET_USER",
+          payload: {
+            user: userObj,
+          },
+        })
+    }
+    navigate("/");
   }, [])
   const onRegisterClick = async () => {
     const response = await RegisterUser(email, password, `${name} ${surname}`);
@@ -34,6 +47,9 @@ const RegisterView = ({ viewToggle }) => {
     const token = response.token;
     localStorage.setItem("token", token);
     toast.success("Registered successfully!");
+    const user = new User(token);
+    dispatch({type: "SET_USER", payload: user});
+    
   }
 
   const onGoogleRegisterClick = () => {

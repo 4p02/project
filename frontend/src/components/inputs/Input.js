@@ -10,7 +10,8 @@ const Input = ({
   type,  // "search", "password" or null
   placeholder,
   label,
-  error,  
+  error = false,
+  errorMsg = "",  
   onBlur = () => {},
   onFocus = () => {}
 }) => {

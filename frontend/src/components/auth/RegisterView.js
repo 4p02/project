@@ -6,6 +6,9 @@ import GoogleButton from "./GoogleButton.js";
 import { GlobalContext } from "../context/GlobalContext.jsx";
 import { BACKEND_API_URL } from "../../lib/Constants.js";
 import { RegisterUser } from "../../api/Auth.js";
+import { EmailInput } from "../inputs/EmailInput.js";
+import { PasswordInput } from "../inputs/PasswordValidInput.js";
+import { ConfirmPasswordInput } from "../inputs/ConfirmPasswordInput.js";
 
 const RegisterView = ({ viewToggle }) => {
   const navigate = useNavigate();
@@ -38,16 +41,6 @@ const RegisterView = ({ viewToggle }) => {
   const onSetSurname = (event) => {
     setSurname(event.target.value);
   }
-  const onSetEmail = (event) => {
-    setEmail(event.target.value);
-  }
-  const onSetPassword = (event) => {
-    setPassword(event.target.value);
-  }
-  const onBlurPassword = () => {}
-  const onSetConfirmPassword = (event) => {
-    setConfirmPassword(event.target.value);
-  }
  
   return (
     <div className="panel phablet-max:bg-white flex flex-col items-center px-12 w-full *:mb-4 py-6">
@@ -67,31 +60,18 @@ const RegisterView = ({ viewToggle }) => {
           label="Surname"
         />
       </div>
-      <Input 
-        onChange={onSetEmail}
+      <EmailInput 
         value={email}
-        width="w-full"
-        type={"email"}
-        placeholder="Enter your email..."
-        label="Email"
+        setValue={setEmail}
       />
-      <Input
-        onChange={onSetPassword}
+      <PasswordInput
         value={password}
-        width="w-full"
-        placeholder="Enter a password..."
-        type="password"
-        label="Password"
-        onBlur={onBlurPassword}
-
-      />
-      <Input
-        onChange={onSetConfirmPassword}
+        setValue={setPassword}
+      /> 
+      <ConfirmPasswordInput
         value={confirmPassword}
-        width="w-full"
-        placeholder="Re-enter your password..."
-        type="password"
-        label="Confirm Password"
+        setValue={setConfirmPassword}
+        password={password}
       />
 
       {/* Buttons */}

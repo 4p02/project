@@ -4,7 +4,7 @@
 import { useState } from "react";
 import Input from "./Input.js";
 
-export function ConfirmPasswordInput({value, setValue, password}) {
+export function ConfirmPasswordInput({value, setValue, setGlobalError, password}) {
     const [error, setError] = useState("");
     const onSetPassword = (event) => {
         setValue(event.target.value);
@@ -12,12 +12,15 @@ export function ConfirmPasswordInput({value, setValue, password}) {
     const onBlur = () => {
         if (value !== password) {
             setError("Passwords do not match");
+            setGlobalError(true);
         } else {
             setError("");
+            setGlobalError(false);
         }
     }
     const onFocus = () => {
         setError("");
+        setGlobalError(false);
     }
     return (
         <>
@@ -25,10 +28,10 @@ export function ConfirmPasswordInput({value, setValue, password}) {
                 onChange={onSetPassword}
                 value={value}
                 width="w-full"
-                type={"email"}
-                placeholder="Enter your email..."
-                label="Email"
-                errorMsg="Invalid email address"
+                type={"password"}
+                placeholder="Enter your password again."
+                label="Confirm Password"
+                errorMsg="Passwords do not match"
                 error={error !== ""}
                 onBlur={onBlur}
                 onFocus={onFocus}

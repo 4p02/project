@@ -63,14 +63,17 @@ const RegisterView = ({ viewToggle }) => {
       <EmailInput 
         value={email}
         setValue={setEmail}
+        setGlobalError={setError}
       />
       <PasswordInput
         value={password}
+        setGlobalError={setError}
         setValue={setPassword}
       /> 
       <ConfirmPasswordInput
         value={confirmPassword}
         setValue={setConfirmPassword}
+        setGlobalError={setError}
         password={password}
       />
 

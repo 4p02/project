@@ -2,7 +2,7 @@
 import { useState } from "react";
 import Input from "./Input.js";
 
-export function PasswordInput({value, setValue}) {
+export function PasswordInput({value, setGlobalError, setValue}) {
     const [error, setError] = useState("");
     const onSetPassword = (event) => {
         setValue(event.target.value);
@@ -12,12 +12,15 @@ export function PasswordInput({value, setValue}) {
         var regularExpression = /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{8,16}$/;
         if (!regularExpression.test(value)) {
             setError("Invalid password");
+            setGlobalError(true);
         } else {
             setError("");
+            setGlobalError(false);
         }
     }
     const onFocus = () => {
         setError("");
+        setGlobalError(false);
     }
     return (
         <>
@@ -25,10 +28,10 @@ export function PasswordInput({value, setValue}) {
             onChange={onSetPassword}
             value={value}
             width="w-full"
-            type={"email"}
-            placeholder="Enter your email..."
-            label="Email"
-            errorMsg="Invalid email address"
+            type={"password"}
+            placeholder="Enter your password"
+            label="Password"
+            errorMsg="Invalid password"
             error={error !== ""}
             onBlur={onBlur}
             onFocus={onFocus}

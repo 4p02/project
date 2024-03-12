@@ -6,7 +6,7 @@ from ollama import AsyncClient, Message, Options, ResponseError, ChatResponse
 from backend import config
 
 
-class Ollama():
+class Llama():
     client: AsyncClient
 
     def __init__(self, client: AsyncClient): self.client = client

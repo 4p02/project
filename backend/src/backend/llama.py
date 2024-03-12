@@ -14,7 +14,7 @@ class Ollama():
     @staticmethod
     async def connect() -> Self:
         client = AsyncClient(config.ollama.endpoint)
-        client._client.base_url = "https://ollama.cosc.brocku.ca/ollama/"
+        client._client.base_url = config.ollama.endpoint
         if config.ollama.bearer_token is not None:
             client._client.headers = {"Authorization": f"Bearer {config.ollama.bearer_token}"}
 

@@ -41,8 +41,6 @@ const Home = () => {
       const response = await summaryObj.summarizeArticle(inputURLValue);
     }
 
-
-
     // Send POST request to backend here
     // setURL("This is a temp URL!");
     // setSummary("This is a temp summary, lorem ipsum or whatever and what not and blah blah blah")

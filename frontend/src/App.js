@@ -6,7 +6,8 @@ import {
   NotFound,
   Landing,
   GetStarted,
-  History
+  History,
+  StylingGuide
 } from "./pages";
 import Navbar from "./components/nav/Navbar.js";
 import Footer from "./components/footer/Footer.js";
@@ -25,6 +26,7 @@ function App() {
           <Route path="/history" element={<History/>} />
           <Route path="/landing" element={<Landing/>} />
           <Route path="/get-started" element={<GetStarted/>} />
+          <Route path="/styling-guide" element={<StylingGuide/>} />
           <Route path="/*" element={<NotFound/>} />
         </Routes>
       </GlobalContextProvider>

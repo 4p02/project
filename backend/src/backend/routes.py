@@ -1,7 +1,9 @@
-from typing import Optional, Tuple
+from typing import Optional, Tuple, Annotated
 
-from fastapi import APIRouter, Depends, Request, FastAPI, HTTPException
+from fastapi import APIRouter, Depends, Header, Request, FastAPI, HTTPException, Security
+from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.security import HTTPBearer
 
 from starlette.authentication import (
     AuthCredentials, AuthenticationBackend, AuthenticationError, BaseUser,
@@ -17,6 +19,7 @@ from backend.auth import Token, google, google_callback, login_user, register_us
 from backend.db import Database
 from backend.models import Login, Register, Summarize
 from backend.misc import handle_and_log_exceptions
+from urllib.parse import urlparse
 
 
 class JWTUser(BaseUser):
@@ -53,6 +56,17 @@ class Routes:
     def __init__(self, db: Database):
         self.db = db
 
+        # Because fastapi is designed very well, it flagrantly ignores any
+        # starlette middleware that the user defines, and decides on it's own
+        # accord to fucking reimplement the entirety of AuthenticationBackend,
+        # with no recourse for backwards compatability, because fuck you that's
+        # why. Using any middleware means it's functionally excluded from
+        # swagger and openapi. So, define a fucking dummy middleware that does
+        # fuck-all for authentication to appease the silly swagger gods, all so
+        # a fucking "Authorize" popup shows on swagger. Fuck this shit man.
+        def fastapi_fake_auth(x: Annotated[Header, Security(HTTPBearer(auto_error=False))]):
+            return x
+
         self.router = APIRouter()
         self.app = FastAPI(
             title="Summarily",
@@ -64,8 +78,10 @@ class Routes:
             contact={
                 "name": "Someone",
                 "email": "someone@example.com"
-            }
+            },
+            dependencies=[Depends(fastapi_fake_auth)],
         )
+
 
         self.router.add_api_route("/google", self.google_route, methods=["GET"])
         self.router.add_api_route("/google/callback", self.google_callback_route, methods=["GET"])
@@ -78,9 +94,22 @@ class Routes:
         self.router.add_api_route("/shorten", self.shorten_route, methods=["POST"])
 
         self.app.include_router(self.router)
-        # todo: make this output 401 or 403 instead of a generic 400
-        self.app.add_middleware(AuthenticationMiddleware, backend=JWTAuthBackend())
+        # we need this middleware to handle CORS
+        self.app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_credentials=True, allow_methods=["*"], allow_headers=["*"])
 
+        # there's no way to use lambda type annotations, and on_error is kwargs
+        def auth_middleware_handle_err(conn: HTTPConnection, ex: Exception):
+            return HTTPException(401, str(ex))
+
+        self.app.add_middleware(
+            AuthenticationMiddleware,
+            backend=JWTAuthBackend(),
+            on_error=auth_middleware_handle_err,
+        )
+
+
+    def get_app(self) -> FastAPI:
+        return self.app
 
     @handle_and_log_exceptions(reraise=HTTPException(500, "Internal server error :("))
     def google_route(self, request: Request):
@@ -143,12 +172,22 @@ class Routes:
         return f'<h1>Shorten Page</h1>'
 
 
-    @handle_and_log_exceptions(reraise=HTTPException(500, "Internal server error :("))
     def summarize_article_route(self, form_data: Summarize):
         """
         Summerize an article from a URL.
         """
-        return f"todo"
+        url = form_data.url
+        
+        # check if url is localhost or an ip address which is not allowed for security things
+        if urlparse(url).hostname in ["localhost", "127.0.0.1", "0.0.0.0"]:
+            raise HTTPException(400, "Invalid URL")
+        elif urlparse(url).hostname is None:
+            raise HTTPException(400, "Invalid URL")
+        
+        print(url)
+        short_url = "todo"
+        # add details to database
+        return JSONResponse(content={"summary": "todo", "shortLink": "todo"}, headers={"Access-Control-Allow-Origin": "*", "content-type": "application/json"})
 
 
     @requires(["authenticated"])
@@ -157,4 +196,6 @@ class Routes:
         """
         Summerize a video from a URL.
         """
+        url = form_data.url
+        
         return f"todo"

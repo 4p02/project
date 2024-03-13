@@ -10,7 +10,10 @@ const Input = ({
   type,  // "search", "password" or null
   placeholder,
   label,
-  error
+  error = false,
+  errorMsg = "",  
+  onBlur = () => {},
+  onFocus = () => {}
 }) => {
   const [showPassword, setShowPassword] = useState(false);
 
@@ -19,6 +22,7 @@ const Input = ({
     if (event.key == "Enter" && onEnter)
       onEnter();
   }
+
 
   return (
     <div className={`flex flex-col ${width || "w-fit"}`}>
@@ -37,7 +41,11 @@ const Input = ({
           onChange={onChange}
           value={value}
           onKeyDown={onKeyDown}
-          type={(type !== "password" && type) || (!showPassword && type) || "text"}
+          inputMode={type === "email" ? "email" : "text"}
+          type={ (type !== "email" && type) ||
+            (type !== "password" && type) || (!showPassword && type) ||  "text"}
+          onBlur={onBlur}
+          onFocus={onFocus}
         />
 
         {/* Search Icon */}

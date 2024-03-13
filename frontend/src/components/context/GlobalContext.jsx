@@ -21,7 +21,7 @@ export default function GlobalContextProvider({ children }) {
         // check if token is valid (maybe in the constructor)
         const userObj = new User(token); 
         dispatch({
-          type: "SET_TOKEN",
+          type: "SET_USER",
           payload: {
             user: userObj,
           },

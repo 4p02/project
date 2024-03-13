@@ -20,6 +20,7 @@ def __init__():
     # psycopg requires a special asyncio policy on windows
     if platform.system() == 'Windows':
         from asyncio import WindowsSelectorEventLoopPolicy
+        import asyncio
         asyncio.set_event_loop_policy(WindowsSelectorEventLoopPolicy())
 
 

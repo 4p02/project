@@ -41,6 +41,11 @@ log checking for migrations
 log \$ backend-migrate
 backend-migrate 2>&1 | sed 's/^\(.*\)$/\x1b\[95m\1\x1b\[39m/'
 
+if [[ -z "$NO_NPM" ]]; then
+log updating npm
+log \$ npm install --include=dev --prefix frontend/
+npm install --include=dev --prefix frontend/ 2>&1 | sed 's/^\(.*\)$/\x1b\[91m\1\x1b\[39m/'
+
 echo
 if [[ -e "backend/postgrest.conf" ]]; then
   postgrest_cfg="backend/postgrest.conf"

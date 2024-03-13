@@ -1,10 +1,11 @@
 import { motion } from "framer-motion"
 
-const FormButton = ({ children, onClick, isSecondary, width, extraClassName }) => {
+const FormButton = ({ children, onClick, isSecondary, width, extraClassName, disabled }) => {
   return (
     <motion.button
       whileHover={{ scale: 1.02 }}
       onClick={onClick}
+      disabled={disabled}
       className={`${isSecondary ? "btn-secondary" : "btn"} ${width} ${extraClassName}`}
     >
       {children}

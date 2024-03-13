@@ -10,19 +10,21 @@ export async function RegisterUserGoogle() {
 }
 
 export async function RegisterUser(email, password, fullName) {
-    const response = await fetch(`${BACKEND_API_URL}/register`, {
+    const response = await fetch(`${BACKEND_API_URL}/auth/register`, {
         method: 'POST',
-        headers: {
+        headers: {  
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
             email: email,
             password: password,
-            full_name: fullName
+            fullname: fullName
         })
-    });
+    }).then(response => response.json());
     // maybe check for response.ok here
-
+    if (response.detail) {
+        return "error";
+    }
     return response;
 
 }
@@ -30,7 +32,7 @@ export async function RegisterUser(email, password, fullName) {
 export async function LoginUser(email, password) {
     // check if token exists here maybe?
 
-    const response = await fetch(`${BACKEND_API_URL}/login`, {
+    const response = await fetch(`${BACKEND_API_URL}/auth/login`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -39,7 +41,7 @@ export async function LoginUser(email, password) {
             email: email,
             password: password
         })
-    });
+    }).then(response => response.json());
     // maybe check for response.ok here
     return response;
 }

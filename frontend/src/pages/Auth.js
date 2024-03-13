@@ -14,8 +14,11 @@ const Auth = () => {
   const toggleView = () => setLoginPageOrRegister(prev => !prev)
 
   useEffect(() => {
-    if (context.token) navigate("/");
+    const isLoggedIn = context.user?.checkValidToken() || false;
+
+    if (isLoggedIn) navigate("/");
     if (state?.isSignIn) setLoginPageOrRegister(false);
+    
   }, [])
 
   return (

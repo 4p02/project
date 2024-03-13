@@ -1,14 +1,17 @@
 import toast from "react-hot-toast";
-import Input from "../components/Input.js";
-import { useState } from "react";
+import Input from "../components/inputs/Input.js";
+import { useState, useContext } from "react";
 import { FaCopy } from "react-icons/fa";
 import { motion } from "framer-motion"
 import FormButton from "../components/auth/FormButton.js";
+import { GlobalContext } from "../components/context/GlobalContext.jsx";
+import Summarize from "../api/Summarize.js";
 
 const Home = () => {
   const [inputURLValue, setInputURLValue] = useState("");
   const [url, setURL] = useState("");
   const [summary, setSummary] = useState("");
+  const userContext = useContext(GlobalContext);
 
   const onLinkCopy = () => {
     if (!url.trim()) { toast.error("There's nothing to copy!"); return; }
@@ -28,10 +31,28 @@ const Home = () => {
       toast.error("Enter something!");
       return;
     }
+    const userObj = userContext.user || null;
+    const summaryObj = new Summerize();
+    // check if link is yt video or not 
+    const youtubeRegex = /^(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+    if (youtubeRegex.test(inputURLValue)) {
+      const response = await summaryObj.summerizeVideo(inputURLValue);
+      
+    } else {
+      const responseJSON = await summaryObj.summerizeArticle(inputURLValue);
+      console.log(responseJSON);
+      if (responseJSON === null || responseJSON === undefined || responseJSON.shortLink === null || responseJSON.summary === null) {
+        toast.error("Error #1");
+        return;
+      }
+      setURL(responseJSON.shortLink);
+      setSummary(responseJSON.summary);
+      
+    }
 
     // Send POST request to backend here
-    setURL("This is a temp URL!");
-    setSummary("This is a temp summary, lorem ipsum or whatever and what not and blah blah blah")
+    // setURL("This is a temp URL!");
+    // setSummary("This is a temp summary, lorem ipsum or whatever and what not and blah blah blah")
   }
 
   return (

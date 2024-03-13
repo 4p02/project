@@ -1,71 +1,201 @@
+from typing import Optional, Tuple, Annotated
 
-from fastapi import APIRouter, Depends, Request, FastAPI
+from fastapi import APIRouter, Depends, Header, Request, FastAPI, HTTPException, Security
+from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
-from starlette.middleware.sessions import SessionMiddleware
+from fastapi.security import HTTPBearer
 
+from starlette.authentication import (
+    AuthCredentials, AuthenticationBackend, AuthenticationError, BaseUser,
+    requires
+)
+from starlette.middleware.authentication import AuthenticationMiddleware
+from starlette.requests import HTTPConnection
 
-from backend import config
-from backend.auth import api_key_auth
+from jwt.exceptions import JWTDecodeError
+
+from backend import config, logger
+from backend.auth import Token, google, google_callback, login_user, register_user
+from backend.db import Database
 from backend.models import Login, Register, Summarize
-from backend.auth import google, google_callback, login, register
+from backend.misc import handle_and_log_exceptions
+from urllib.parse import urlparse
 
+
+class JWTUser(BaseUser):
+    token: Token
+    def __init__(self, token: Token) -> None: self.token = token
+
+    @property
+    def is_authenticated(self) -> bool: return True
+
+
+class JWTAuthBackend(AuthenticationBackend):
+    async def authenticate(self, conn: HTTPConnection) -> Optional[Tuple[AuthCredentials, BaseUser]]:
+        if "Authorization" not in conn.headers: return None
+
+        parts = conn.headers["Authorization"].split(" ")
+        if len(parts) != 2: raise AuthenticationError("Invalid authorization header")
+        scheme, strtoken = parts
+
+        if scheme.lower() != 'bearer': raise AuthenticationError("Invalid authorization header")
+
+        try:
+            token = Token.decode(strtoken)
+        except JWTDecodeError as ex:
+            raise AuthenticationError("Invalid or expired token")
+
+        return (AuthCredentials(["authenticated"]), JWTUser(token))
 
 
 class Routes:
-    def __init__(self, db):
+    router: APIRouter
+    database: Database
+    app: FastAPI
+
+    def __init__(self, db: Database):
+        self.db = db
+
+        # Because fastapi is designed very well, it flagrantly ignores any
+        # starlette middleware that the user defines, and decides on it's own
+        # accord to fucking reimplement the entirety of AuthenticationBackend,
+        # with no recourse for backwards compatability, because fuck you that's
+        # why. Using any middleware means it's functionally excluded from
+        # swagger and openapi. So, define a fucking dummy middleware that does
+        # fuck-all for authentication to appease the silly swagger gods, all so
+        # a fucking "Authorize" popup shows on swagger. Fuck this shit man.
+        def fastapi_fake_auth(x: Annotated[Header, Security(HTTPBearer(auto_error=False))]):
+            return x
+
         self.router = APIRouter()
         self.app = FastAPI(
-            title="Summerily",
-            description="## Summerily API",
-            summary="Summerily API",
+            title="Summarily",
+            description="""
+            Summarily is a service that provides a set of tools to help you summarize articles, videos, and shorten URLs.
+            """,
+            summary="Summarily API",
             version="0.0.1",
             contact={
                 "name": "Someone",
                 "email": "someone@example.com"
-            }
-
+            },
+            dependencies=[Depends(fastapi_fake_auth)],
         )
+
+
         self.router.add_api_route("/google", self.google_route, methods=["GET"])
         self.router.add_api_route("/google/callback", self.google_callback_route, methods=["GET"])
-        self.router.add_api_route("/register", self.register_route, methods=["POST"])
-        self.router.add_api_route("/login", self.login_route, methods=["POST"])
-        self.router.add_api_route("/get_new_token", self.get_new_token_route, methods=["POST"])
-        self.router.add_api_route("/summarize/article", self.summarize_article_route, methods=["POST"], dependencies=[Depends(api_key_auth)])
-        self.router.add_api_route("/summarize/video", self.summarize_video_route, methods=["POST"], dependencies=[Depends(api_key_auth)])
-        self.router.add_api_route("/shorten", self.shorten_route, methods=["POST"], dependencies=[Depends(api_key_auth)])
-        self.router.add_api_route("/history", self.get_history_route, methods=["GET"], dependencies=[Depends(api_key_auth)])
-        self.app.include_router(self.router)
-        self.app.add_middleware(SessionMiddleware, config.auth.jwt_secret)
+        self.router.add_api_route("/auth/register", self.register_route, methods=["POST"])
+        self.router.add_api_route("/auth/login", self.login_route, methods=["POST"])
+        self.router.add_api_route("/auth/refresh", self.refresh_route, methods=["POST"])
 
-    def get_app(self):
+        self.router.add_api_route("/summarize/article", self.summarize_article_route, methods=["POST"])
+        self.router.add_api_route("/summarize/video", self.summarize_video_route, methods=["POST"])
+        self.router.add_api_route("/shorten", self.shorten_route, methods=["POST"])
+
+        self.app.include_router(self.router)
+        # we need this middleware to handle CORS
+        self.app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_credentials=True, allow_methods=["*"], allow_headers=["*"])
+
+        # there's no way to use lambda type annotations, and on_error is kwargs
+        def auth_middleware_handle_err(conn: HTTPConnection, ex: Exception):
+            return HTTPException(401, str(ex))
+
+        self.app.add_middleware(
+            AuthenticationMiddleware,
+            backend=JWTAuthBackend(),
+            on_error=auth_middleware_handle_err,
+        )
+
+
+    def get_app(self) -> FastAPI:
         return self.app
+
+    @handle_and_log_exceptions(reraise=HTTPException(500, "Internal server error :("))
     def google_route(self, request: Request):
+        """
+        Redirects to Google OAuth.
+        """
         return google(request=request)
+
+
+    @handle_and_log_exceptions(reraise=HTTPException(500, "Internal server error :("))
     def google_callback_route(self, request: Request):
+        """
+        Handles the callback from Google OAuth.
+        """
         return google_callback(request=request)
 
-    def register_route(self, form_data: Register):
-        return register(form_data.email, form_data.password, form_data.full_name)
 
-    """
-    Test for documentation
-    """
-    def login_route(self, form_data: Login):
-        print(form_data)
-        return login(form_data.email, form_data.password)
+    # @handle_and_log_exceptions(reraise=HTTPException(500, "Internal server error :("))
+    async def register_route(self, form: Register):
+        """
+        Registers a new user account with an email and password.
+        """
+        user = await register_user(
+            self.db,
+            email=form.email, password=form.password, fullname=form.fullname
+        )
 
-    def get_new_token_route(self):
-        return f'<h1>Get New Token Page</h1>'
+        if user is not None:
+            return {"token": Token.new(user["id"]).encode()}
 
-    def get_history_route(self):
-        return f'<h1>History Page</h1>'
+        raise HTTPException(400, "Email is already in use.")
 
+
+    # @handle_and_log_exceptions(reraise=HTTPException(500, "Internal server error :("))
+    async def login_route(self, form: Login):
+        """
+        Logins into a user account with an email and password.
+        """
+        if (user := await login_user(self.db, email=form.email, password=form.password)) is not None:
+            return {"token": Token.new(user["id"]).encode()}
+
+        raise HTTPException(401, "Invalid email or password.")
+
+
+    @requires(["authenticated"])
+    # @handle_and_log_exceptions(reraise=HTTPException(500, "Internal server error :("))
+    def refresh_route(self, request: Request):
+        """
+        Renews the expiration date on a JWT token.
+        """
+        token: Token = request.user.token
+        return {"token": Token.new(token.uid).encode()}
+
+
+    @handle_and_log_exceptions(reraise=HTTPException(500, "Internal server error :("))
     def shorten_route(self, form_data: Summarize):
+        """
+        Shortens a URL.
+        """
         return f'<h1>Shorten Page</h1>'
 
 
-
     def summarize_article_route(self, form_data: Summarize):
-        return f"todo"
-    def summarize_video_route(self, form_data: Summarize):
+        """
+        Summerize an article from a URL.
+        """
+        url = form_data.url
+        
+        # check if url is localhost or an ip address which is not allowed for security things
+        if urlparse(url).hostname in ["localhost", "127.0.0.1", "0.0.0.0"]:
+            raise HTTPException(400, "Invalid URL")
+        elif urlparse(url).hostname is None:
+            raise HTTPException(400, "Invalid URL")
+        
+        print(url)
+        short_url = "todo"
+        # add details to database
+        return JSONResponse(content={"summary": "todo", "shortLink": "todo"}, headers={"Access-Control-Allow-Origin": "*", "content-type": "application/json"})
+
+
+    @requires(["authenticated"])
+    @handle_and_log_exceptions(reraise=HTTPException(500, "Internal server error :("))
+    def summarize_video_route(self, request: Request, form_data: Summarize):
+        """
+        Summerize a video from a URL.
+        """
+        url = form_data.url
+        
         return f"todo"

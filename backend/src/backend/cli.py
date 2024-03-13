@@ -20,7 +20,7 @@ import backend.cfg
 
 def setup_cfg():
     if path.isfile(path.join(MODULE_ROOT, "config.toml")):
-        logger.warning(f"config.toml already exists; not overwriting")
+        logger.fatal(f"config.toml already exists; not overwriting")
         return
 
     shutil.copy(
@@ -43,6 +43,31 @@ def setup_cfg():
         file.write(toml)
 
     logger.info(f"generated config.toml")
+
+
+    if path.isfile(path.join(MODULE_ROOT, "postgrest.conf")):
+        logger.fatal(f"postgrest.conf already exists; not overwriting")
+        logger.warn(f"you should manually edit postgrest.conf to include jwt-secret")
+        return
+
+    shutil.copy(
+        path.join(MODULE_ROOT, "postgrest.default.conf"),
+        path.join(MODULE_ROOT, "postgrest.conf")
+    )
+
+    with io.open(path.join(MODULE_ROOT, "postgrest.conf"), "r+") as file:
+        conf = file.read()
+
+        conf = re.sub(
+            pattern=r"""jwt-secret\s*=\s*["'].*?["'].*""",
+            repl=f"jwt-secret = \"{jwt_secret}\"",
+            string=conf
+        )
+
+        file.seek(0)
+        file.write(conf)
+
+    logger.info(f"generated postgrest.conf")
 
 
 @asyncio_entrypoint

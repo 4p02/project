@@ -1,6 +1,8 @@
+import { memo } from "react"
+
 const HistoryCard = ({ title, desc, image, date }) => {
   const dateFormatOptions = { year: 'numeric', month: 'short', day: 'numeric' }
-  
+
   return (
     <div className="flex flex-col items-center w-screen h-[412px] phablet:w-[326px] m-1">
       <img className="flex justify-center items-center bg-dark text-light dark:bg-light dark:text-dark rounded-t-xl w-full h-2/5" alt="image" src={image} />
@@ -12,4 +14,4 @@ const HistoryCard = ({ title, desc, image, date }) => {
     </div>
   )
 }
-export default HistoryCard
+export default memo(HistoryCard)

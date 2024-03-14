@@ -18,7 +18,7 @@ class Llama():
         if config.ollama.bearer_token is not None:
             client._client.headers = {"Authorization": f"Bearer {config.ollama.bearer_token}"}
 
-        self = Ollama(client)
+        self = Llama(client)
         models = (model["name"] for model in (await self.client.list())["models"])
         if self.model not in models:
             raise Exception(f"selected model {self.model} is not available on ollama endpoint")

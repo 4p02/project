@@ -42,9 +42,10 @@ log \$ backend-migrate
 backend-migrate 2>&1 | sed 's/^\(.*\)$/\x1b\[95m\1\x1b\[39m/'
 
 if [[ -z "$NO_NPM" ]]; then
-log updating npm
-log \$ npm install --include=dev --prefix frontend/
-npm install --include=dev --prefix frontend/ 2>&1 | sed 's/^\(.*\)$/\x1b\[91m\1\x1b\[39m/'
+  log updating npm
+  log \$ npm install --include=dev --prefix frontend/
+  npm install --include=dev --prefix frontend/ 2>&1 | sed 's/^\(.*\)$/\x1b\[91m\1\x1b\[39m/'
+fi
 
 echo
 if [[ -e "backend/postgrest.conf" ]]; then
@@ -70,7 +71,7 @@ log starting frontend dev
 # in addition, for whatever fucking reason someone had the bright idea to launch
 # the system browser, so shut that the fuck down (at least they put in a toggle)
 log \$ npm run --prefix frontend/ start
-PORT=8081 BROWSER=none npm run --prefix frontend/ start 2>&1 \
+PORT=8081 HOST=127.0.0.1 BROWSER=none npm run --prefix frontend/ start 2>&1 \
   | sed -e 's/\x1b\[:digit:J//' -e 's/^\(.*\)$/\x1b\[91m\1\x1b\[39m/' &
 frontend_pid=$!
 echo

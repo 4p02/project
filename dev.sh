@@ -43,8 +43,10 @@ backend-migrate 2>&1 | sed 's/^\(.*\)$/\x1b\[95m\1\x1b\[39m/'
 
 if [[ -z "$NO_NPM" ]]; then
   log updating npm
-  log \$ npm install --include=dev --prefix frontend/
-  npm install --include=dev --prefix frontend/ 2>&1 | sed 's/^\(.*\)$/\x1b\[91m\1\x1b\[39m/'
+  cd frontend
+  log \$ npm install --include=dev
+  npm install --include=dev 2>&1 | sed 's/^\(.*\)$/\x1b\[91m\1\x1b\[39m/'
+  cd ..
 fi
 
 echo
@@ -70,10 +72,12 @@ log starting frontend dev
 # toggle to disable, so fucking disable the CSI clear sequence for that process.
 # in addition, for whatever fucking reason someone had the bright idea to launch
 # the system browser, so shut that the fuck down (at least they put in a toggle)
-log \$ npm run --prefix frontend/ start
-PORT=8081 HOST=127.0.0.1 BROWSER=none npm run --prefix frontend/ start 2>&1 \
+cd frontend/
+log \$ npm run start
+PORT=8081 BROWSER=none npm run start 2>&1 \
   | sed -e 's/\x1b\[:digit:J//' -e 's/^\(.*\)$/\x1b\[91m\1\x1b\[39m/' &
 frontend_pid=$!
+cd ..
 echo
 
 

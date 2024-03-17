@@ -1,31 +1,41 @@
--- test data for 'users' table
-insert into private.users (email, password, fullname)
-values
-    ('user1@example.com', crypt('password!', gen_salt('bf', 12)), 'John Smith'),
-    ('user2@example.com', crypt('password!', gen_salt('bf', 12)), 'Mr. Trudeau'),
-    ('user3@example.com', crypt('password!', gen_salt('bf', 12)), 'Margaret Thatcher');
+-- Insert test data into private.payments
+INSERT INTO private.payments (payment_dates, end_pro)
+VALUES
+  ('{"2024-03-15 10:00:00', '2024-03-16 10:00:00"}', '2024-03-16 10:00:00'),
+  ('{"2024-03-14 10:00:00', '2024-03-15 10:00:00"}', '2024-03-15 10:00:00'),
+  ('{"2024-03-13 10:00:00', '2024-03-14 10:00:00"}', '2024-03-14 10:00:00');
 
--- test data for 'documents' table
-insert into public.documents (type, filename, source_url, file, title, body, summary)
-values
-    ('document', 'document1.txt', null, null, 'my pdf title!', 'Hello world!', null),
-    ('document', 'document2.txt', null, null, 'document2.txt', '0xabcdef', null),
-    ('document', 'document3.txt', null, null, 'document3.txt', '0x123abc', null),
-    ('video', null, 'https://www.youtube.com/watch?v=dqw4w9wgxcq', null, 'rick astley - never gonna give you up', null, null),
-    ('video', null, 'http://video2.com', null, '', '0xabcdef', null),
-    ('video', null, 'http://video3.com', null, '', '0x123abc', null),
-    ('webpage', null, 'https://gist.githubusercontent.com/mattipv4/045239bc27b16b2bcf7a3a9a4648c08a/raw/2411e31293a35f3e565f61e7490a806d4720ea7e/bee%2520movie%2520script', null, null, null, null);
+-- Insert test data into private.users
+INSERT INTO private.users (created_at, email, password, fullname, pays)
+VALUES
+  ('2024-03-15 10:00:00', 'user1@example.com', 'password1', 'User One', 1),
+  ('2024-03-15 10:00:00', 'user2@example.com', 'password2', 'User Two', 2),
+  ('2024-03-15 10:00:00', 'user3@example.com', 'password3', 'User Three', 3);
 
--- -- test data for 'articles' table
--- insert into public.articles (owner, type, history, private)
--- values
---     (1, 'document', '{1,2,3}', true),
---     (2, 'video', '{4,5,6}', false),
---     (3, 'webpage', '{7,8}', true);
+-- Insert test data into public.documents
+INSERT INTO public.documents (created_at, type, filename, source_url, title, image, body, summary)
+VALUES
+  ('2024-03-15 10:00:00', 'document', 'doc1.pdf', 'http://example.com/doc1.pdf', 'Document 1', NULL, NULL, NULL),
+  ('2024-03-15 10:00:00', 'document', 'doc2.pdf', 'http://example.com/doc2.pdf', 'Document 2', NULL, NULL, NULL),
+  ('2024-03-15 10:00:00', 'document', 'doc3.pdf', 'http://example.com/doc3.pdf', 'Document 3', NULL, NULL, NULL);
 
--- test data for 'links' table
-insert into public.links (given_link, shortened_link)
-values
-    ('http://longlink1.com', 'short1'),
-    ('http://longlink2.com', 'short2'),
-    ('http://longlink3.com', 'short3');
+-- Insert test data into public.links
+INSERT INTO public.links (given_link, shortened_link)
+VALUES
+  ('http://example.com/longlink1', 'http://short.link/abc123'),
+  ('http://example.com/longlink2', 'http://short.link/def456'),
+  ('http://example.com/longlink3', 'http://short.link/ghi789');
+
+-- Insert test data into private.history
+INSERT INTO private.history (user_id, document_id, link_id)
+VALUES
+  (1, 1, 1),
+  (2, 2, 2),
+  (3, 3, 3);
+
+-- Insert test data into public.tasks
+INSERT INTO public.tasks (created_at, document_id, user_id, task)
+VALUES
+  ('2024-03-15 10:00:00', 1, 1, 'Task for Document 1'),
+  ('2024-03-15 10:00:00', 2, 2, 'Task for Document 2'),
+  ('2024-03-15 10:00:00', 3, 3, 'Task for Document 3');

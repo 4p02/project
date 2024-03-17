@@ -1,8 +1,54 @@
-1. Make sure to run `npm install` upon pulling!
-2. Run `npm run start` to launch a web server and open the page in your browser
+# Web app for summarily
 
-Added a `npm run clean` script to clean up the node_modules folder and reinstall all dependencies.
+This is the frontend react web app for summarily that uses the summarily API to summarize webpages 
 
+## Installation
+
+### INSTALLING NPM
+
+#### NPM From source
+https://nodejs.org/en/download/
+
+#### NPM on windows
+```
+choco install nodejs
+```
+
+#### NPM on macos
+```
+brew install node
+```
+
+#### NPM on linux
+```
+sudo apt install nodejs
+sudo apt install npm
+```
+
+
+## Usage
+
+### Install packages first
+```
+npm install
+```
+
+### Run the web app
+```
+npm run start
+```
+
+
+## Main packages
+
+- ReactJS
+  - https://react.dev/
+- Tailwind CSS
+  - https://tailwindcss.com/
+
+
+
+## Further docs
 ------------------------------------------------
 
 React Icons Docs:

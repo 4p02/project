@@ -19,7 +19,7 @@ const Input = ({
 
   // When enter key is pressed, enter the input
   const onKeyDown = (event) => {
-    if (event.key == "Enter" && onEnter)
+    if (event.key === "Enter" && onEnter)
       onEnter();
   }
 

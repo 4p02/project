@@ -2,7 +2,6 @@
 import { useEffect, useContext, useState } from "react";
 import { GlobalContext } from "../components/context/GlobalContext";
 import HistoryCard from "../components/HistoryCard";
-import mockHistory from "../mockHistory.js";
 import { PAGE_SIZE } from "../lib/Constants.js";
 
 const History = () => {
@@ -20,7 +19,7 @@ const History = () => {
         console.error(error);}
         )
     }
-  }, []);
+  }, [page, userContext.user]);
 
   const loadMore = () => {
     setPage(page + 1);

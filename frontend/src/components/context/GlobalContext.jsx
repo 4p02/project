@@ -28,7 +28,7 @@ export default function GlobalContextProvider({ children }) {
         })
     }
     // else do nothing because if it not there then user is not logged in and everything is null
-  }, []);
+  }, [state, dispatch]);
 
   return (
     <GlobalContext.Provider value={{ state, dispatch }}>

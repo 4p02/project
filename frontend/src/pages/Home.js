@@ -31,12 +31,18 @@ const Home = () => {
       toast.error("Enter something!");
       return;
     }
-    const userObj = userContext.user || null;
-    const summaryObj = new Summerize();
+    const summaryObj = new Summarize(userContext.user.token);
     // check if link is yt video or not 
     const youtubeRegex = /^(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
     if (youtubeRegex.test(inputURLValue)) {
-      const response = await summaryObj.summerizeVideo(inputURLValue);
+      const responseJSON = await summaryObj.summerizeVideo(inputURLValue);
+      console.log(response);
+      if (responseJSON === null || responseJSON === undefined || responseJSON.shortLink === null || responseJSON.summary === null) {
+        toast.error("Error #1");
+        return;
+      }
+      setURL(response.shortLink);
+      setSummary(response.summary); 
       
     } else {
       const responseJSON = await summaryObj.summerizeArticle(inputURLValue);
@@ -50,9 +56,6 @@ const Home = () => {
       
     }
 
-    // Send POST request to backend here
-    // setURL("This is a temp URL!");
-    // setSummary("This is a temp summary, lorem ipsum or whatever and what not and blah blah blah")
   }
 
   return (

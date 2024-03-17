@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { useEffect, useState, useContext, useRef } from "react";
+import { useEffect, useState, useContext } from "react";
 import Input from "../inputs/Input.js";
 import FormButton from "./FormButton.js";
 import GoogleButton from "./GoogleButton.js";
@@ -25,7 +25,7 @@ const RegisterView = ({ viewToggle }) => {
   useEffect(() => {
     // check if token exists here so we can avoid this view
     const token = localStorage.getItem("token");
-    if (token && !state || !state.user) {
+    if (token && (!state || !state.user)) {
         // check if token is valid (maybe in the constructor)
         const userObj = new User(token); 
         dispatch({
@@ -36,7 +36,7 @@ const RegisterView = ({ viewToggle }) => {
         })
     }
     navigate("/");
-  }, [])
+  }, [state, dispatch, navigate])
   const onRegisterClick = async () => {
     const response = await RegisterUser(email, password, `${name} ${surname}`);
     if (response == "error") {

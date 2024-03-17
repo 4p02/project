@@ -18,7 +18,8 @@ const LoginView = ({ viewToggle }) => {
   useEffect(() => {
     // check if token exists here so we can avoid this view
     const token = localStorage.getItem("token");
-    if (token && !state || !state.user) {
+    console.log(error);
+    if (token && (!state || !state.user) ) {
         // check if token is valid (maybe in the constructor)
         const userObj = new User(token); 
         dispatch({
@@ -29,7 +30,7 @@ const LoginView = ({ viewToggle }) => {
         })
     }
     navigate("/");
-  }, [])
+  }, [state, dispatch, navigate])
   const onLogInClick = async () => {
     const response = await LoginUser(email, password);
     console.log(response);

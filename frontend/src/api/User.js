@@ -1,4 +1,4 @@
-import { POSTGREST_API_URL, BACKEND_API_URL } from '../lib/Constants.js';
+import { POSTGREST_API_URL } from '../lib/Constants.js';
 import { PostgrestClient} from "@supabase/postgrest-js";
 
 export default class User {

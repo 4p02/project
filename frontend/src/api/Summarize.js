@@ -7,11 +7,7 @@ export default class Summarize {
     getToken() {
         return this.token;
     }
-<<<<<<< HEAD:frontend/src/api/Summarize.js
-    async summarizeArticle(link) {
-=======
     async summerizeArticle(url) {
->>>>>>> 1e8fd275ad81edcdeb302c898e5b458850f10700:frontend/src/api/Summerize.js
         const response = await fetch(`${BACKEND_API_URL}/summarize/article`, {
             method: 'POST',
             headers: {
@@ -24,7 +20,7 @@ export default class Summarize {
         return await response.json()
         
     }
-    async summarizeVideo(link) {
+    async summerizeVideo(link) {
         const response = await fetch(`${BACKEND_API_URL}/summarize/video`, {
             method: 'POST',
             headers: {

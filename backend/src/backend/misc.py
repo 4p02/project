@@ -3,6 +3,7 @@
 import asyncio
 from typing import Any, Awaitable, Callable, Union
 import functools
+from urllib.parse import urlparse
 
 from backend import logger
 
@@ -71,3 +72,20 @@ def handle_and_log_exceptions(
             raise StopAsyncIteration(default)
 
     return inner_async if asyncio.iscoroutinefunction(func) else inner
+
+
+
+def check_valid_url(url: str):
+    """
+    Check if the given URL is valid.
+    """
+    if not url.startswith("http://") and not url.startswith("https://"):
+        return False
+    # check if url is localhost or an ip address which is not allowed for security things
+    if urlparse(url).hostname in ["localhost", "127.0.0.1", "0.0.0.0"]:
+        return False
+    elif urlparse(url).hostname is None:
+        return False
+    
+    print(url)
+    return url

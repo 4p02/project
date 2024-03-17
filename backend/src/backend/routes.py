@@ -19,8 +19,7 @@ from backend.auth import Token, google, google_callback, login_user, register_us
 from backend.db import Database
 from backend.models import Login, Register, Summarize
 from backend.misc import handle_and_log_exceptions
-from urllib.parse import urlparse
-
+from backend.misc import check_valid_url
 
 class JWTUser(BaseUser):
     token: Token
@@ -109,12 +108,18 @@ class Routes:
 
 
     def get_app(self) -> FastAPI:
+        """
+        Return the fast API instance.
+        @return: FastAPI
+        """
         return self.app
 
     @handle_and_log_exceptions(reraise=HTTPException(500, "Internal server error :("))
     def google_route(self, request: Request):
         """
         Redirects to Google OAuth.
+        @param request: Request to authorize redirect to the Google OAuth.
+        @return: RedirectResponse
         """
         return google(request=request)
 
@@ -123,14 +128,18 @@ class Routes:
     def google_callback_route(self, request: Request):
         """
         Handles the callback from Google OAuth.
+        @param request: Request to handle the callback from Google OAuth.
+        @return: RedirectResponse
         """
-        return google_callback(request=request)
+        return google_callback(db=self.db, request=request)
 
 
     # @handle_and_log_exceptions(reraise=HTTPException(500, "Internal server error :("))
     async def register_route(self, form: Register):
         """
-        Registers a new user account with an email and password.
+        Registers a new user account with an email, password, fullname.
+        @param form: Register {email: str, password: str, fullname: str}
+        @return: dict with jwt {token: str}
         """
         user = await register_user(
             self.db,
@@ -147,6 +156,8 @@ class Routes:
     async def login_route(self, form: Login):
         """
         Logins into a user account with an email and password.
+        @param form: Login {email: str, password: str}
+        @return: dict with jwt {token: str}
         """
         if (user := await login_user(self.db, email=form.email, password=form.password)) is not None:
             return {"token": Token.new(user["id"]).encode()}
@@ -161,41 +172,48 @@ class Routes:
         Renews the expiration date on a JWT token.
         """
         token: Token = request.user.token
+        # check if token is expired
+        if token.is_expired():
+            raise HTTPException(401, "Token is expired")
         return {"token": Token.new(token.uid).encode()}
 
 
     @handle_and_log_exceptions(reraise=HTTPException(500, "Internal server error :("))
-    def shorten_route(self, form_data: Summarize):
+    def shorten_route(self, form: Summarize):
         """
-        Shortens a URL.
+        Shortens a URL. given a link to shorten
+        @param form: Summarize {url: str}
+        @return: dict with {shortLink: str}
         """
-        return f'<h1>Shorten Page</h1>'
+
+        if not check_valid_url(form.url):
+            raise HTTPException(400, "Invalid URL")
+
+        return {"shortLink": "todo"}
 
 
-    def summarize_article_route(self, form_data: Summarize):
+    def summarize_article_route(self, form: Summarize):
         """
         Summerize an article from a URL.
         """
-        url = form_data.url
+        url = form.url
         
-        # check if url is localhost or an ip address which is not allowed for security things
-        if urlparse(url).hostname in ["localhost", "127.0.0.1", "0.0.0.0"]:
-            raise HTTPException(400, "Invalid URL")
-        elif urlparse(url).hostname is None:
+        
+        if not check_valid_url(url):
             raise HTTPException(400, "Invalid URL")
         
-        print(url)
-        short_url = "todo"
         # add details to database
         return JSONResponse(content={"summary": "todo", "shortLink": "todo"}, headers={"Access-Control-Allow-Origin": "*", "content-type": "application/json"})
 
 
     @requires(["authenticated"])
     @handle_and_log_exceptions(reraise=HTTPException(500, "Internal server error :("))
-    def summarize_video_route(self, request: Request, form_data: Summarize):
+    def summarize_video_route(self, form: Summarize):
         """
         Summerize a video from a URL.
+        @param form: Summarize {url: str}
+        @return: dict with {summary: str, shortLink: str}
         """
-        url = form_data.url
+        url = form.url
         
-        return f"todo"
+        return JSONResponse(content={"summary": "todo", "shortLink": "todo"}, headers={"Access-Control-Allow-Origin": "*", "content-type": "application/json"})

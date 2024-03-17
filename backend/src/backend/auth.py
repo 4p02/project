@@ -46,6 +46,8 @@ class Token(NamedTuple):
             exp=(birth + timedelta(days=config.auth.jwt_expiry_days)),
         )
 
+    def is_expired(self) -> bool:
+        return datetime.now(timezone.utc) > self.exp
     def encode(self) -> str:
         data = self._asdict()
         data["nbf"] = int(data["nbf"].timestamp())
@@ -128,6 +130,13 @@ async def register_user(db: Database, email: str, password: str, fullname: str) 
         return user
 
 
+async def check_if_user_exists(db: Database, email: str) -> bool:
+    """May raise psycopg.Error on database error."""
+    return (await (await db.cursor().execute(
+        """select email, id from private.users where email = %s""",
+        (email, )
+    )).fetchone())
+
 async def google(request: Request):
     return await oauth.google.authorize_redirect(request, config.google_callback_uri)
 
@@ -141,11 +150,11 @@ Handle google oauth callback
 @param request: Request
 @return: dict with jwt token
 """
-async def google_callback(request:Request):
+async def google_callback(db: Database, request:Request):
     try:
         access_token = await oauth.google.authorize_access_token(request)
-    except OAuthError:
-        raise "Oauth in da house"
+    except OAuthError as e:
+        raise e.error, e.add_note("157 auth.py")
     token_expiry = access_token['expires_at']
     user_info = access_token['userinfo']
     profile_picture = user_info['picture']
@@ -153,5 +162,11 @@ async def google_callback(request:Request):
     family_name = user_info['family_name']
     email = user_info['email']
     print(token_expiry, profile_picture, given_name, family_name, email, "expire")
-    token_jwt = "123"
-    return {'result': True, 'access_token': token_jwt}
+    user = await check_if_user_exists(db, email)
+    if user is not None:
+        return {"token": Token.new(user["id"]).encode()}
+    # create the user
+    user = await register_user(db, email, "password", given_name + " " + family_name)
+    if user is not None:
+        return {"token": Token.new(user["id"]).encode()}
+    raise Exception("User not created line 175 auth.py")

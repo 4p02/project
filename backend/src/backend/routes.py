@@ -195,6 +195,14 @@ class Routes:
     def summarize_article_route(self, form: Summarize):
         """
         Summerize an article from a URL.
+        Steps to parse
+        1. Check if article parsed
+        2. if parsed Check last parse date then if revision reparse else return last parse
+        3. if not parsed do 4
+        4. Get image, title, description, source url, body
+        5. Create table entry in articles
+        6. Get important things (headers, body, meta, article, section, main, img alt tag, a, p, li, ol, ul, img, figcaption, table)
+        7. Pass to ollama
         """
         url = form.url
         

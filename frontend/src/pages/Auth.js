@@ -4,6 +4,7 @@ import RegisterView from "../components/auth/RegisterView.js";
 import LoginView from "../components/auth/LoginView.js";
 import { useNavigate } from 'react-router-dom';
 import { GlobalContext } from "../components/context/GlobalContext.jsx";
+import { CheckTokenAndState } from "../lib/Constants.js";
 
 const Auth = () => {
   const [loginPageOrRegister, setLoginPageOrRegister] = useState(true);
@@ -14,9 +15,12 @@ const Auth = () => {
   const toggleView = () => setLoginPageOrRegister(prev => !prev)
 
   useEffect(() => {
-    const isLoggedIn = context.user?.checkValidToken() || false;
 
-    if (isLoggedIn) navigate("/");
+
+    const token = localStorage.getItem("token");
+    if (CheckTokenAndState(token, context.state, context.dispatch)) {
+      navigate("/");
+    }
     if (state?.isSignIn) setLoginPageOrRegister(false);
     
   }, [])

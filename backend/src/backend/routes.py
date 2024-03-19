@@ -208,7 +208,7 @@ class Routes:
 
     @requires(["authenticated"])
     @handle_and_log_exceptions(reraise=HTTPException(500, "Internal server error :("))
-    def summarize_video_route(self, form: Summarize):
+    def summarize_video_route(self, request: Request, form: Summarize):
         """
         Summerize a video from a URL.
         @param form: Summarize {url: str}

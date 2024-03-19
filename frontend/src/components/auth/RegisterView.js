@@ -4,7 +4,7 @@ import Input from "../inputs/Input.js";
 import FormButton from "./FormButton.js";
 import GoogleButton from "./GoogleButton.js";
 import { GlobalContext } from "../context/GlobalContext.jsx";
-import { BACKEND_API_URL } from "../../lib/Constants.js";
+import { BACKEND_API_URL, CheckTokenAndState } from "../../lib/Constants.js";
 import { RegisterUser } from "../../api/Auth.js";
 import { EmailInput } from "../inputs/EmailInput.js";
 import { PasswordInput } from "../inputs/PasswordValidInput.js";
@@ -25,17 +25,10 @@ const RegisterView = ({ viewToggle }) => {
   useEffect(() => {
     // check if token exists here so we can avoid this view
     const token = localStorage.getItem("token");
-    if (token && (!state || !state.user)) {
-        // check if token is valid (maybe in the constructor)
-        const userObj = new User(token); 
-        dispatch({
-          type: "SET_USER",
-          payload: {
-            user: userObj,
-          },
-        })
+    if (CheckTokenAndState(token, state, dispatch)) {
+        navigate("/");
     }
-    navigate("/");
+
   }, [state, dispatch, navigate])
   const onRegisterClick = async () => {
     const response = await RegisterUser(email, password, `${name} ${surname}`);

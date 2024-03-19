@@ -154,7 +154,8 @@ async def google_callback(db: Database, request:Request):
     try:
         access_token = await oauth.google.authorize_access_token(request)
     except OAuthError as e:
-        raise e.error, e.add_note("157 auth.py")
+        e.add_note("Failed to authorize access token line 157 auth.py")
+        raise e
     token_expiry = access_token['expires_at']
     user_info = access_token['userinfo']
     profile_picture = user_info['picture']

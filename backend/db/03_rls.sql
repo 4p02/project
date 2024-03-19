@@ -1,7 +1,7 @@
 alter table private.users enable row level security;
 alter table public.documents enable row level security;
 alter table public.links enable row level security;
-alter table private.history enable row level security;
+alter table public.history enable row level security;
 alter table private.payments enable row level security;
 
 
@@ -15,11 +15,11 @@ grant select(id, created_at, email, fullname), update(email, fullname) on privat
 create policy public_users_rls on private.users as restrictive for select
     using (id = (current_setting('request.jwt.claims', true)::json->>'uid')::int);
 
-
-create policy private_history_rls on private.history as restrictive for all
+grant select on public.history to pgrest_auth;
+grant select on public.history to pgrest_anon;
+create policy public_history_rls on public.history as restrictive for all
     using (user_id = (current_setting('request.jwt.claims', true)::json->>'uid')::int);
 
 
 grant select on public.documents to pgrest_auth;
 grant select on public.documents to pgrest_anon;
-

@@ -1,3 +1,15 @@
+-- this function is called by postgrest via the db-pre-request config option.
+-- if any exception is raised, the request from that token are rejected.
+create or replace function private.check_jwt() returns void as $$
+declare
+  token json := current_setting('request.jwt.claims', true)::json;
+begin
+  if exists(select * from private.users where (id = token->>'uid')) then
+    raise insufficient_privilege;
+  end if;
+end
+$$ language plpgsql;
+
 alter table private.users enable row level security;
 alter table public.documents enable row level security;
 alter table public.links enable row level security;

@@ -15,25 +15,24 @@ const LoginView = ({ viewToggle }) => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState(false);
   const {state, dispatch} = useContext(GlobalContext);
-  useEffect(() => {
-    // check if token exists here so we can avoid this view
-    const token = localStorage.getItem("token");
-    
-    if (CheckTokenAndState(token, state, dispatch)) {
-      navigate("/");
-    }
-  }, [])
+
   const onLogInClick = async () => {
     const response = await LoginUser(email, password);
-    console.log(response);
     if (!response.token) {
       setError(true);
+      toast.error(response.detail)
       return;
     }
-    localStorage.setItem("token", response.token);
-    toast.success("Logged in successfully!");
     const userObj = new User(response.token);
-    dispatch({type: "SET_USER", payload: userObj});
+    localStorage.setItem("token", response.token);
+    dispatch({
+      type: "SET_USER",
+      payload: {
+        user: userObj
+      }
+    });
+
+    toast.success("Logged in successfully!");
     navigate("/");
   }
 

@@ -1,29 +1,11 @@
-import { useEffect, useState, useContext } from "react";
-import { useLocation } from "react-router-dom";
+import { useState } from "react";
 import RegisterView from "../components/auth/RegisterView.js";
 import LoginView from "../components/auth/LoginView.js";
-import { useNavigate } from 'react-router-dom';
-import { GlobalContext } from "../components/context/GlobalContext.jsx";
-import { CheckTokenAndState } from "../lib/Constants.js";
 
 const Auth = () => {
   const [loginPageOrRegister, setLoginPageOrRegister] = useState(true);
-  const { state } = useLocation();
-  const context = useContext(GlobalContext);
-  const navigate = useNavigate();
 
   const toggleView = () => setLoginPageOrRegister(prev => !prev)
-
-  useEffect(() => {
-
-
-    const token = localStorage.getItem("token");
-    if (CheckTokenAndState(token, context.state, context.dispatch)) {
-      navigate("/");
-    }
-    if (state?.isSignIn) setLoginPageOrRegister(false);
-    
-  }, [])
 
   return (
     <div className="page !pt-0">

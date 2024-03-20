@@ -7,7 +7,7 @@ export default class Summarize {
     getToken() {
         return this.token;
     }
-    async summerizeArticle(url) {
+    async summarizeArticle(url) {
         const response = await fetch(`${BACKEND_API_URL}/summarize/article`, {
             method: 'POST',
             headers: {
@@ -20,7 +20,7 @@ export default class Summarize {
         return await response.json()
         
     }
-    async summerizeVideo(link) {
+    async summarizeVideo(link) {
         const response = await fetch(`${BACKEND_API_URL}/summarize/video`, {
             method: 'POST',
             headers: {

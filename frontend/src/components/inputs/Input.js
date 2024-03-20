@@ -42,8 +42,7 @@ const Input = ({
           value={value}
           onKeyDown={onKeyDown}
           inputMode={type === "email" ? "email" : "text"}
-          type={ (type !== "email" && type) ||
-            (type !== "password" && type) || (!showPassword && type) ||  "text"}
+          type={ (showPassword && type === "password") && "text" || type}
           onBlur={onBlur}
           onFocus={onFocus}
         />

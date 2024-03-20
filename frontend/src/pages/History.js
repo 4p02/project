@@ -5,9 +5,10 @@ import HistoryCard from "../components/HistoryCard";
 import { PAGE_SIZE } from "../lib/Constants.js";
 
 const History = () => {
-  const {state} = useContext(GlobalContext);
+  const { state } = useContext(GlobalContext);
   const [history, setHistory] = useState([]);
   const [page, setPage] = useState(0);
+
   useEffect(() => {
     // userContext.user 
     if (!state.user) {

@@ -29,8 +29,8 @@ function App() {
           <Route path="/styling-guide" element={<StylingGuide/>} />
           <Route path="/*" element={<NotFound/>} />
         </Routes>
+        <Footer />
       </GlobalContextProvider>
-      <Footer />
     </main>
   );
 }

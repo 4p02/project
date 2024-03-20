@@ -11,7 +11,7 @@ const Home = () => {
   const [inputURLValue, setInputURLValue] = useState("");
   const [url, setURL] = useState("");
   const [summary, setSummary] = useState("");
-  const userContext = useContext(GlobalContext);
+  const { state } = useContext(GlobalContext);
 
   const onLinkCopy = () => {
     if (!url.trim()) { toast.error("There's nothing to copy!"); return; }
@@ -31,11 +31,11 @@ const Home = () => {
       toast.error("Enter something!");
       return;
     }
-    const summaryObj = new Summarize(userContext.user.token);
+    const summaryObj = new Summarize(state.user.token);
     // check if link is yt video or not 
     const youtubeRegex = /^(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
     if (youtubeRegex.test(inputURLValue)) {
-      const responseJSON = await summaryObj.summerizeVideo(inputURLValue);
+      const responseJSON = await summaryObj.summarizeVideo(inputURLValue);
       console.debug(responseJSON);
       if (responseJSON === null || responseJSON === undefined || responseJSON.shortLink === null || responseJSON.summary === null) {
         toast.error("Error #1");
@@ -45,7 +45,7 @@ const Home = () => {
       setSummary(responseJSON.summary); 
       
     } else {
-      const responseJSON = await summaryObj.summerizeArticle(inputURLValue);
+      const responseJSON = await summaryObj.summarizeArticle(inputURLValue);
       console.log(responseJSON);
       if (responseJSON === null || responseJSON === undefined || responseJSON.shortLink === null || responseJSON.summary === null) {
         toast.error("Error #1");

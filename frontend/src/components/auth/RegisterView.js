@@ -22,27 +22,19 @@ const RegisterView = ({ viewToggle }) => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState(false);
   
-  useEffect(() => {
-    // check if token exists here so we can avoid this view
-    const token = localStorage.getItem("token");
-    if (CheckTokenAndState(token, state, dispatch)) {
-        navigate("/");
-    }
-
-  }, [state, dispatch, navigate])
   const onRegisterClick = async () => {
     const response = await RegisterUser(email, password, `${name} ${surname}`);
     if (response == "error") {
       toast.error("Email is already in use");
       return;
     }
+
     toast.success("Account created successfully!");
     const token = response.token;
     localStorage.setItem("token", token);
     toast.success("Registered successfully!");
     const user = new User(token);
-    dispatch({type: "SET_USER", payload: user});
-    
+    dispatch({type: "SET_USER", payload: { user } });
   }
 
   const onGoogleRegisterClick = () => {

@@ -31,10 +31,30 @@ function trap_exit {
 
 trap "trap_exit" INT KILL QUIT EXIT ERR
 
-if [[ -z "$VIRTUAL_ENV" ]]; then
-  elog not in a virtual environment, exiting
+
+function try_enter_venv {
+  for path in backend/.venva backend/.env backend/venv backend/env; do
+    if [[ -d "$path" ]]; then
+      if [[ -f "$path/bin/activate" ]]; then
+        elog entering virtual environment $path
+        source "$path/bin/activate"
+        return
+      elif [[ -f "$path/Scripts/activate" ]]; then
+        elog entering virtual environment $path
+        source "$path/bin/activate"
+        return
+      fi
+    fi
+  done
+
+  elog not in a virtual environment and could not find one, exiting
   killed=1
   exit
+}
+
+
+if [[ -z "$VIRTUAL_ENV" ]]; then
+  try_enter_venv
 fi
 
 log checking for migrations

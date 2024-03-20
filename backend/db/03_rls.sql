@@ -1,7 +1,19 @@
+-- this function is called by postgrest via the db-pre-request config option.
+-- if any exception is raised, the request from that token are rejected.
+create or replace function private.check_jwt() returns void as $$
+declare
+  token json := current_setting('request.jwt.claims', true)::json;
+begin
+  if exists(select * from private.users where (id = token->>'uid')) then
+    raise insufficient_privilege;
+  end if;
+end
+$$ language plpgsql;
+
 alter table private.users enable row level security;
 alter table public.documents enable row level security;
 alter table public.links enable row level security;
-alter table private.history enable row level security;
+alter table public.history enable row level security;
 alter table private.payments enable row level security;
 
 
@@ -15,11 +27,11 @@ grant select(id, created_at, email, fullname), update(email, fullname) on privat
 create policy public_users_rls on private.users as restrictive for select
     using (id = (current_setting('request.jwt.claims', true)::json->>'uid')::int);
 
-
-create policy private_history_rls on private.history as restrictive for all
+grant select on public.history to pgrest_auth;
+grant select on public.history to pgrest_anon;
+create policy public_history_rls on public.history as restrictive for all
     using (user_id = (current_setting('request.jwt.claims', true)::json->>'uid')::int);
 
 
 grant select on public.documents to pgrest_auth;
 grant select on public.documents to pgrest_anon;
-

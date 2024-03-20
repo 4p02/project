@@ -1,4 +1,5 @@
 create extension if not exists pgcrypto;
+create extension if not exists citext;
 
 
 -- only the public schema is exposed to postgrest

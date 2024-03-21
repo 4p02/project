@@ -57,9 +57,7 @@ async def summarize_video(video_url):
         summarized_content = processed_content[:8000]  # Limit the content size to 8000 characters
 
         # Use Llama for summarization
-        summary_response = await llama_client.chat(
-            messages=[{"role": "user", "content": f"print 1"}]
-        )
+        summary_response = await llama_client.generate(prompt="Write the letter a 10 times.", model="mistral:7b-instruct-v0.2-q4_K_M")
         summary = summary_response.messages[-1].content
 
         delete_file(vtt_file_path)  # Delete the temporary VTT file

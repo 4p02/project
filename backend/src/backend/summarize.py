@@ -1,6 +1,5 @@
-
-
-
+from bs4 import BeautifulSoup
+from backend.llama import Llama
 class Summerize:
     
     
@@ -16,6 +15,97 @@ class Summerize:
         pass
 
 
+def parse_article(url: str):
+    """
+    TODO: Pre prompting
+    headers, body, meta, article, section, main, img alt tag, a, p, li, ol, ul, img, figcaption, table)
+    """
+    get_html = """
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Temporary HTML</title>
+</head>
+<body>
+
+    <header>
+        <h1>Header</h1>
+    </header>
+
+    <nav>
+        <ul>
+            <li><a href="#">Home</a></li>
+            <li><a href="#">About</a></li>
+            <li><a href="#">Services</a></li>
+            <li><a href="#">Contact</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <article>
+            <h2>Article Title</h2>
+            <p>This is the content of the article.</p>
+            <figure>
+                <img src="image.jpg" alt="Description of the image">
+                <figcaption>Figure caption goes here</figcaption>
+            </figure>
+        </article>
+
+        <section>
+            <h2>Section Title</h2>
+            <p>This is the content of the section.</p>
+        </section>
+
+        <aside>
+            <h2>Aside Title</h2>
+            <p>This is the content of the aside.</p>
+        </aside>
+    </main>
+
+    <footer>
+        <p>Copyright © 2024. All rights reserved.</p>
+    </footer>
+    <p>TEMPORARY HTML</p>
+</body>
+</html>
+    """
+    soup = BeautifulSoup(get_html)
+    tags_we_want = ["h1", "h2", "h3", "h4", "h5", "h6", "p", "li", "ol", "ul", "img", "figcaption", "table"]
+    total_text = ""
+    for tag in soup.find_all(tags_we_want):
+        print(tag.name)
+        if str(tag.name).startswith("h"):
+            print(tag.text)
+            total_text += tag.text + "\n"
+        elif tag.name == "p":
+            print(tag.text)
+            total_text += tag.text + "\n"
+        elif tag.name == "li":
+            print(tag.text)
+            total_text += tag.text + "\n"
+        elif tag.name == "ol":
+            print(tag.text)
+            total_text += tag.text + "\n"
+        elif tag.name == "ul":
+            print(tag.text)
+            total_text += tag.text + "\n"
+        elif tag.name == "img":
+            if "alt" in tag.attrs:
+                print(tag["alt"])
+                total_text += tag["alt"] + "\n"
+        elif tag.name == "figcaption":
+            print(tag.text)
+            total_text += tag.text + "\n"
+        elif tag.name == "table":
+            print(tag.text)
+            total_text += tag.text + "\n"
+    
+    sum_prompt = summary_prompt(total_text)
+    summary = Llama().chat(messages=[{"role": "system", "content": sum_prompt}])
+    return summary
 
 def summary_prompt(text: str, is_completion: bool = False) -> str:
     prompt = f"Take a deep breath and summarize the following text:\n{text}"
@@ -54,3 +144,7 @@ def combine_paragraph_summaries_prompt(paragraphs: list[str], is_completion: boo
     prompt = prompt[:-2] # Trimming the last \n\n
 
     return summary_prompt(prompt, is_completion)
+
+
+if __name__ == "__main__":
+    parse_article("https://example.com")

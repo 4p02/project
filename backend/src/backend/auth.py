@@ -108,6 +108,13 @@ async def login_user(db: Database, email: str, password: str) -> Optional[dict]:
     del user["password"]
     return user
 
+async def get_document_by_url(db: Database, url: str) -> Optional[dict]:
+    document = (await (await db.cursor().execute(
+        """select * from private.documents where url = %s""",
+        (url, )
+    )).fetchone())
+    
+    return document
 
 async def register_user(db: Database, email: str, password: str, fullname: str) -> Optional[dict]:
     async with db.transaction() as tx:  # fixme: this doesn't actually start a transaction!

@@ -15,11 +15,12 @@ from starlette.requests import HTTPConnection
 from jwt.exceptions import JWTDecodeError
 
 from backend import config, logger
-from backend.auth import Token, google, google_callback, login_user, register_user
+from backend.auth import Token, get_document_by_url, google, google_callback, login_user, register_user
 from backend.db import Database
 from backend.models import Login, Register, Summarize
 from backend.misc import handle_and_log_exceptions
 from backend.misc import check_valid_url
+from backend.summarize import parse_article
 
 class JWTUser(BaseUser):
     token: Token
@@ -189,6 +190,7 @@ class Routes:
         if not check_valid_url(form.url):
             raise HTTPException(400, "Invalid URL")
 
+        
         return {"shortLink": "todo"}
 
 
@@ -210,8 +212,12 @@ class Routes:
         if not check_valid_url(url):
             raise HTTPException(400, "Invalid URL")
         
+        if (document := get_document_by_url(self.db, form.url)) is not None:
+            return JSONResponse(content=document, headers={"Access-Control-Allow-Origin": "*", "content-type": "application/json"})
+        
+        summarized_text = parse_article(url)
         # add details to database
-        return JSONResponse(content={"summary": "todo", "shortLink": "todo"}, headers={"Access-Control-Allow-Origin": "*", "content-type": "application/json"})
+        return JSONResponse(content={"summary": summarized_text, "shortLink": "todo"}, headers={"Access-Control-Allow-Origin": "*", "content-type": "application/json"})
 
 
     @requires(["authenticated"])

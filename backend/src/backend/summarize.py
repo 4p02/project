@@ -76,7 +76,6 @@ def parse_article(url: str):
     tags_we_want = ["h1", "h2", "h3", "h4", "h5", "h6", "p", "li", "ol", "ul", "img", "figcaption", "table"]
     total_text = ""
     for tag in soup.find_all(tags_we_want):
-        print(tag.name)
         if str(tag.name).startswith("h"):
             print(tag.text)
             total_text += tag.text + "\n"

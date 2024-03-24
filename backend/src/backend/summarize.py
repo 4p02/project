@@ -2,81 +2,35 @@ from backend.db import Database
 from bs4 import BeautifulSoup
 from backend.llama import Llama
 from backend.auth import create_document
-from backend.misc import bytes_to_str, str_to_bytes
-class Summerize:
-    
-    
-
-    def __init__(self, url, user):
-        pass
-    def summerize_article(self):
-        pass
-    def save_to_database(self):
-        pass
-    
-    def summerize_video(self):
-        pass
+from backend.misc import str_to_bytes
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from time import sleep
 
 
 async def parse_article(url: str, db: Database):
     """
-    TODO: Pre prompting
-    headers, body, meta, article, section, main, img alt tag, a, p, li, ol, ul, img, figcaption, table)
+    Get important headers, body, meta, article, section, main, img alt tag, a, p, li, ol, ul, img, figcaption, table) from url
+    Use selenium to get the full html of the page
+    BeautifulSoup to parse the html
+    Extract the text from the tags we want
+    Send the text to ollama to summarize
+    return the summary and the document id
     """
-    get_html = """
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Temporary HTML</title>
-</head>
-<body>
-
-    <header>
-        <h1>Header</h1>
-    </header>
-
-    <nav>
-        <ul>
-            <li><a href="#">Home</a></li>
-            <li><a href="#">About</a></li>
-            <li><a href="#">Services</a></li>
-            <li><a href="#">Contact</a></li>
-        </ul>
-    </nav>
-
-    <main>
-        <article>
-            <h2>Article Title</h2>
-            <p>This is the content of the article.</p>
-            <figure>
-                <img src="image.jpg" alt="Description of the image">
-                <figcaption>Figure caption goes here</figcaption>
-            </figure>
-        </article>
-
-        <section>
-            <h2>Section Title</h2>
-            <p>This is the content of the section.</p>
-        </section>
-
-        <aside>
-            <h2>Aside Title</h2>
-            <p>This is the content of the aside.</p>
-        </aside>
-    </main>
-
-    <footer>
-        <p>Copyright © 2024. All rights reserved.</p>
-    </footer>
-    <p>TEMPORARY HTML</p>
-</body>
-</html>
-    """
+    # stop the browser from opening up
+    options = Options()
+    options.add_argument('--headless=new')
+    selenium_driver = webdriver.Chrome(options=options)
+    selenium_driver.get(url)
+    title = selenium_driver.title
+    # we have to wait 5 seconds for the page to load and for the javascript to execute
+    sleep(5)
+    get_html = selenium_driver.execute_script("return document.getElementsByTagName('html')[0].innerHTML")
+    selenium_driver.quit()
+    if get_html is None:
+        print("Line 57 (summarize.py): get_html is None")
+        raise Exception("get_html is None")
     soup = BeautifulSoup(get_html)
-    title = soup.find_all("title")[0].text
     tags_we_want = ["h1", "h2", "h3", "h4", "h5", "h6", "p", "li", "ol", "ul", "img", "figcaption", "table"]
     total_text = ""
     for tag in soup.find_all(tags_we_want):
@@ -108,7 +62,15 @@ async def parse_article(url: str, db: Database):
     
 
     sum_prompt = summary_prompt(total_text)
-    summary = Llama().chat(messages=[{"role": "system", "content": sum_prompt}])
+    try:
+        llama_client = await Llama.connect()
+        summary_response = await llama_client.generate(prompt=sum_prompt, model="mistral:7b-instruct-v0.2-q4_K_M")
+        summary = summary_response.messages[-1].content
+    except Exception as e:
+        print(f"Line 66 (summarize.py): {e}")
+        print("prob connection to ollama")
+        raise e
+
     created_doc = await create_document(db=db, source_url=url, body=str_to_bytes(total_text), summary=str_to_bytes(summary), title=title)
     if created_doc is None:
         print("Line 114 (summarize.py): Document not created successfully")

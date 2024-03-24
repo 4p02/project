@@ -1,5 +1,8 @@
+from backend.db import Database
 from bs4 import BeautifulSoup
 from backend.llama import Llama
+from backend.auth import create_document
+from backend.misc import bytes_to_str, str_to_bytes
 class Summerize:
     
     
@@ -15,7 +18,7 @@ class Summerize:
         pass
 
 
-def parse_article(url: str):
+def parse_article(url: str, db: Database):
     """
     TODO: Pre prompting
     headers, body, meta, article, section, main, img alt tag, a, p, li, ol, ul, img, figcaption, table)
@@ -73,6 +76,7 @@ def parse_article(url: str):
 </html>
     """
     soup = BeautifulSoup(get_html)
+    title = soup.find_all("title")[0].text
     tags_we_want = ["h1", "h2", "h3", "h4", "h5", "h6", "p", "li", "ol", "ul", "img", "figcaption", "table"]
     total_text = ""
     for tag in soup.find_all(tags_we_want):
@@ -102,8 +106,12 @@ def parse_article(url: str):
             print(tag.text)
             total_text += tag.text + "\n"
     
+
     sum_prompt = summary_prompt(total_text)
     summary = Llama().chat(messages=[{"role": "system", "content": sum_prompt}])
+    created_doc = create_document(db=db, source_url=url, body=str_to_bytes(total_text), summary=str_to_bytes(summary), title=title)
+    if created_doc is None:
+        print("Line 114 (summarize.py): Document not created successfully")
     return summary
 
 def summary_prompt(text: str, is_completion: bool = False) -> str:

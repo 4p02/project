@@ -116,6 +116,18 @@ async def get_document_by_url(db: Database, url: str) -> Optional[dict]:
     
     return document
 
+async def create_document(db: Database, source_url: str, body: bytes, summary: bytes, title: str, type: "webpage" | "video" | "document" = "webpage") -> Optional[dict]:
+    
+    document = (await (await db.cursor().execute(
+        """
+        insert into private.documents (type, source_url, body, summary, title) values (%s, %s, %s, %s, %s)
+        returning id, created_at, type, source_url, body, summary, title;
+        """,
+        (type, source_url, body, summary, title)
+    )).fetchone())
+        
+    return document
+
 async def register_user(db: Database, email: str, password: str, fullname: str) -> Optional[dict]:
     async with db.transaction() as tx:  # fixme: this doesn't actually start a transaction!
         # don't register an email twice as it'll fail the uniqueness check

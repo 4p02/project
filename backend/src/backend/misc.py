@@ -74,6 +74,17 @@ def handle_and_log_exceptions(
     return inner_async if asyncio.iscoroutinefunction(func) else inner
 
 
+def bytes_to_str(data: bytes) -> str:
+    """
+    Convert bytes to string.
+    """
+    return data.decode("utf-8")
+
+def str_to_bytes(data: str) -> bytes:
+    """
+    Convert string to bytes.
+    """
+    return data.encode("utf-8")
 
 def check_valid_url(url: str):
     """

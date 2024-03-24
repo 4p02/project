@@ -40,7 +40,7 @@ create table public.documents (
     created_at timestamp with time zone null default now(),
     type article_type not null,
     filename text default null,
-    source_url text default null,
+    source_url text unique default null,
     file bytea default null,
     title text default null,
     image bytea default null,

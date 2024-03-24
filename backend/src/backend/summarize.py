@@ -18,7 +18,7 @@ class Summerize:
         pass
 
 
-def parse_article(url: str, db: Database):
+async def parse_article(url: str, db: Database):
     """
     TODO: Pre prompting
     headers, body, meta, article, section, main, img alt tag, a, p, li, ol, ul, img, figcaption, table)
@@ -109,10 +109,10 @@ def parse_article(url: str, db: Database):
 
     sum_prompt = summary_prompt(total_text)
     summary = Llama().chat(messages=[{"role": "system", "content": sum_prompt}])
-    created_doc = create_document(db=db, source_url=url, body=str_to_bytes(total_text), summary=str_to_bytes(summary), title=title)
+    created_doc = await create_document(db=db, source_url=url, body=str_to_bytes(total_text), summary=str_to_bytes(summary), title=title)
     if created_doc is None:
         print("Line 114 (summarize.py): Document not created successfully")
-    return summary
+    return summary, created_doc["id"]
 
 def summary_prompt(text: str, is_completion: bool = False) -> str:
     prompt = f"Take a deep breath and summarize the following text:\n{text}"

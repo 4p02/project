@@ -156,6 +156,17 @@ async def get_link_from_id(db: Database, id: int) -> Optional[str]:
     )).fetchone())
     return link
 
+
+async def add_user_history(db: Database, document_id: int, link_id: int, user_id: int) -> Optional[dict]:
+    history = (await (await db.cursor().execute(
+        """
+        insert into private.history (document_id, link_id, user_id) values (%s, %s, %s)
+        returning id;
+        """,
+        (document_id, link_id, user_id)
+    )).fetchone())
+    return history
+
 async def create_short_link(db: Database, given_link: str, uid: str) -> Optional[str]:
     if not uid:
         link = (await (await db.cursor().execute(

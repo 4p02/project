@@ -1,4 +1,4 @@
-from typing import Optional, Tuple, Annotated
+from typing import Literal, Optional, Tuple, Annotated
 
 from fastapi import APIRouter, Depends, Header, Request, FastAPI, HTTPException, Security
 from fastapi.responses import JSONResponse, RedirectResponse
@@ -15,11 +15,10 @@ from starlette.requests import HTTPConnection
 from jwt.exceptions import JWTDecodeError
 
 from backend import config, logger
-from backend.auth import Token, create_short_link, get_document_by_url, google, google_callback, login_user, register_user, get_link_from_id
+from backend.auth import Token, create_short_link, get_document_by_url, google, google_callback, login_user, register_user, get_link_from_id, add_user_history
 from backend.db import Database
 from backend.models import Login, Register, Summarize
-from backend.misc import handle_and_log_exceptions
-from backend.misc import check_valid_url
+from backend.misc import handle_and_log_exceptions, check_valid_url
 from backend.summarize import parse_article
 
 class JWTUser(BaseUser):
@@ -52,6 +51,7 @@ class Routes:
     router: APIRouter
     database: Database
     app: FastAPI
+    OUR_URL: Literal['http://localhost:8080'] = "http://localhost:8080"
 
     def __init__(self, db: Database):
         self.db = db
@@ -213,7 +213,7 @@ class Routes:
         id = create_short_link(self.db, form.url, uid)        
         if id is None:
             raise HTTPException(500, "Internal server error :(")
-        return {"shortLink": f"https://oururl.com/s/{id}"}
+        return {"shortLink": f"{self.OUR_URL}/s/{id}"}
 
 
     async def summarize_article_route(self, request: Request, form: Summarize):
@@ -229,17 +229,38 @@ class Routes:
         7. Pass to ollama
         """
         url = form.url
-        
+        token = request.user.token
+        try:
+            uid = Token.decode(token)
+        except JWTDecodeError as ex:
+            print(ex, "token decode error in summarize")
+            uid = None
         
         if not check_valid_url(url):
             raise HTTPException(400, "Invalid URL")
         
         if (document := await get_document_by_url(self.db, form.url)) is not None:
+            # add history maybe?
             return JSONResponse(content=document, headers={"Access-Control-Allow-Origin": "*", "content-type": "application/json"})
         
-        summarized_text = parse_article(url)
+        summarized_text, document_id = parse_article(url)
         # add details to database
-        return JSONResponse(content={"summary": summarized_text, "shortLink": "todo"}, headers={"Access-Control-Allow-Origin": "*", "content-type": "application/json"})
+        shortened_url_id = await create_short_link(self.db, url, uid)["id"]
+        if shortened_url_id is None:
+            print("Internal server error :( line 251: routes.py")
+            raise HTTPException(500, "Internal server error :(")
+        
+        # add to history
+        if uid is not None:
+            try:
+                added_history = await add_user_history(self.db, document_id=int(document_id), link_id=int(shortened_url_id), user_id=int(uid))
+                if added_history is None:
+                    logger.debug("Internal server error :( line 259: routes.py")
+                    raise HTTPException(500, "Internal server error :(")
+            except Exception as ex:
+                logger.debug(ex, "add history error")
+                pass
+        return JSONResponse(content={"summary": summarized_text, "shortLink": f"{self.OUR_URL}/s/{shortened_url_id}"}, headers={"Access-Control-Allow-Origin": "*", "content-type": "application/json"})
 
 
     @requires(["authenticated"])

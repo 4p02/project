@@ -24,14 +24,15 @@ async def parse_article(url: str, db: Database):
     selenium_driver.get(url)
     title = selenium_driver.title
     # we have to wait 5 seconds for the page to load and for the javascript to execute
-    sleep(5)
-    get_html = selenium_driver.execute_script("return document.getElementsByTagName('html')[0].innerHTML")
+    # sleep(5)
+    get_html = selenium_driver.execute_script("return document.body.innerHTML")
+    print(get_html, "GET_HTML")
     selenium_driver.quit()
     if get_html is None:
         print("Line 57 (summarize.py): get_html is None")
         raise Exception("get_html is None")
     soup = BeautifulSoup(get_html)
-    tags_we_want = ["h1", "h2", "h3", "h4", "h5", "h6", "p", "li", "ol", "ul", "img", "figcaption", "table"]
+    tags_we_want = ["h1", "h2", "h3", "h4", "h5", "h6", "p", "li", "ol", "ul", "img", "code", "figcaption", "table"]
     total_text = ""
     for tag in soup.find_all(tags_we_want):
         if str(tag.name).startswith("h"):

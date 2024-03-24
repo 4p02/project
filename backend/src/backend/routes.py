@@ -15,7 +15,7 @@ from starlette.requests import HTTPConnection
 from jwt.exceptions import JWTDecodeError
 
 from backend import config, logger
-from backend.auth import Token, get_document_by_url, google, google_callback, login_user, register_user, get_link_from_id
+from backend.auth import Token, create_short_link, get_document_by_url, google, google_callback, login_user, register_user, get_link_from_id
 from backend.db import Database
 from backend.models import Login, Register, Summarize
 from backend.misc import handle_and_log_exceptions
@@ -163,7 +163,6 @@ class Routes:
         print("Whats my name? sqrt(69) = 8.30 " + id)
         try:
             if (link := await get_link_from_id(self.db, int(id))) is not None:
-                print(link["given_link"] + " is the link")
                 return RedirectResponse(url=link["given_link"])
         except ValueError as e:
             print(e)
@@ -192,14 +191,11 @@ class Routes:
         Renews the expiration date on a JWT token.
         """
         token: Token = request.user.token
-        # check if token is expired
-        if token.is_expired():
-            raise HTTPException(401, "Token is expired")
         return {"token": Token.new(token.uid).encode()}
 
 
     @handle_and_log_exceptions(reraise=HTTPException(500, "Internal server error :("))
-    def shorten_route(self, form: Summarize):
+    async def shorten_route(self, request: Request, form: Summarize):
         """
         Shortens a URL. given a link to shorten
         @param form: Summarize {url: str}
@@ -209,11 +205,18 @@ class Routes:
         if not check_valid_url(form.url):
             raise HTTPException(400, "Invalid URL")
 
-        
-        return {"shortLink": "todo"}
+        token = request.user.token
+        try:
+            uid = Token.decode(token)
+        except JWTDecodeError as ex:
+            uid = None
+        id = create_short_link(self.db, form.url, uid)        
+        if id is None:
+            raise HTTPException(500, "Internal server error :(")
+        return {"shortLink": f"https://oururl.com/s/{id}"}
 
 
-    async def summarize_article_route(self, form: Summarize):
+    async def summarize_article_route(self, request: Request, form: Summarize):
         """
         Summerize an article from a URL.
         Steps to parse

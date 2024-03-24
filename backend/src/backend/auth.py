@@ -156,6 +156,26 @@ async def get_link_from_id(db: Database, id: int) -> Optional[str]:
     )).fetchone())
     return link
 
+async def create_short_link(db: Database, given_link: str, uid: str) -> Optional[str]:
+    if not uid:
+        link = (await (await db.cursor().execute(
+            """
+            insert into public.links (given_link) values (%s)
+            returning id;
+            """,
+            (given_link, )
+        )).fetchone())
+        return link
+    
+    link = (await (await db.cursor().execute(
+        """
+        insert into public.links (given_link, owner) values (%s, %s)
+        returning id;
+        """,
+        (given_link, uid)
+    )).fetchone())
+    return link
+
 async def check_if_user_exists(db: Database, email: str) -> bool:
     """May raise psycopg.Error on database error."""
     return (await (await db.cursor().execute(

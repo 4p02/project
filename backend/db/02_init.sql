@@ -46,6 +46,7 @@ create table public.documents (
     image bytea default null,
     body bytea default null,
     summary bytea default null
+    
 );
 
 

@@ -31,7 +31,8 @@ const Home = () => {
       toast.error("Enter something!");
       return;
     }
-    const summaryObj = new Summarize(userContext.user.token);
+  
+    const summaryObj = new Summarize(userContext && userContext.user && userContext.user.token ? userContext.user.token : null);
     // check if link is yt video or not 
     const youtubeRegex = /^(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
     if (youtubeRegex.test(inputURLValue)) {

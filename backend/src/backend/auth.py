@@ -110,7 +110,7 @@ async def login_user(db: Database, email: str, password: str) -> Optional[dict]:
 
 async def get_document_by_url(db: Database, url: str) -> Optional[dict]:
     document = (await (await db.cursor().execute(
-        """select * from private.documents where url = %s""",
+        """select * from public.documents where source_url = %s""",
         (url, )
     )).fetchone())
     

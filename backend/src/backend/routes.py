@@ -18,7 +18,7 @@ from backend import config, logger
 from backend.auth import Token, create_short_link, get_document_by_url, google, google_callback, login_user, register_user, get_link_from_id, add_user_history
 from backend.db import Database
 from backend.models import Login, Register, Summarize
-from backend.misc import handle_and_log_exceptions, check_valid_url
+from backend.misc import handle_and_log_exceptions, check_valid_url, str_to_bytes, bytes_to_str
 from backend.summarize import parse_article
 
 class JWTUser(BaseUser):
@@ -205,10 +205,10 @@ class Routes:
         if not check_valid_url(form.url):
             raise HTTPException(400, "Invalid URL")
 
-        token = request.user.token
         try:
+            token = request.user.token
             uid = Token.decode(token)
-        except JWTDecodeError as ex:
+        except Exception as ex:
             uid = None
         id = create_short_link(self.db, form.url, uid)        
         if id is None:
@@ -229,19 +229,29 @@ class Routes:
         7. Pass to ollama
         """
         url = form.url
-        token = request.user.token
         try:
+            token = request.user.token
             uid = Token.decode(token)
-        except JWTDecodeError as ex:
-            print(ex, "token decode error in summarize")
+        except Exception as ex:
+            logger.debug(ex, "token decode error in summarize line 236: routes.py")
             uid = None
         
         if not check_valid_url(url):
             raise HTTPException(400, "Invalid URL")
         
         if (document := await get_document_by_url(self.db, form.url)) is not None:
+            
+            created_shorted_link = await create_short_link(self.db, url, uid)
+            if created_shorted_link is None:
+                logger.debug("Internal server error :( line 245: routes.py")
+                raise HTTPException(500, "Internal server error :(")
+            new_shortened_url_id = created_shorted_link["id"]
+            json_document = {
+                "summary": bytes_to_str(document["summary"]),
+                "shortLink": f"{self.OUR_URL}/s/{new_shortened_url_id}"
+            }
             # add history maybe?
-            return JSONResponse(content=document, headers={"Access-Control-Allow-Origin": "*", "content-type": "application/json"})
+            return JSONResponse(content=json_document, headers={"Access-Control-Allow-Origin": "*", "content-type": "application/json"})
         
         summarized_text, document_id = parse_article(url)
         # add details to database

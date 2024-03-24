@@ -5,7 +5,6 @@ from backend.auth import create_document
 from backend.misc import str_to_bytes
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
-from time import sleep
 
 
 async def parse_article(url: str, db: Database):
@@ -23,8 +22,6 @@ async def parse_article(url: str, db: Database):
     selenium_driver = webdriver.Chrome(options=options)
     selenium_driver.get(url)
     title = selenium_driver.title
-    # we have to wait 5 seconds for the page to load and for the javascript to execute
-    # sleep(5)
     get_html = selenium_driver.execute_script("return document.body.innerHTML")
     print(get_html, "GET_HTML")
     selenium_driver.quit()

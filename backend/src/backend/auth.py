@@ -116,7 +116,7 @@ async def get_document_by_url(db: Database, url: str) -> Optional[dict]:
     
     return document
 
-async def create_document(db: Database, source_url: str, body: bytes, summary: bytes, title: str, type: "webpage" | "video" | "document" = "webpage") -> Optional[dict]:
+async def create_document(db: Database, source_url: str, body: bytes, summary: bytes, title: str, type: str = "webpage") -> Optional[dict]:
     
     document = (await (await db.cursor().execute(
         """
@@ -148,6 +148,13 @@ async def register_user(db: Database, email: str, password: str, fullname: str) 
         )).fetchone())
         return user
 
+
+async def get_link_from_id(db: Database, id: int) -> Optional[str]:
+    link = (await (await db.cursor().execute(
+        """select given_link from public.links where id = %s""",
+        (id, )
+    )).fetchone())
+    return link
 
 async def check_if_user_exists(db: Database, email: str) -> bool:
     """May raise psycopg.Error on database error."""

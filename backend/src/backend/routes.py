@@ -1,7 +1,7 @@
 from typing import Optional, Tuple, Annotated
 
 from fastapi import APIRouter, Depends, Header, Request, FastAPI, HTTPException, Security
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, RedirectResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import HTTPBearer
 
@@ -15,7 +15,7 @@ from starlette.requests import HTTPConnection
 from jwt.exceptions import JWTDecodeError
 
 from backend import config, logger
-from backend.auth import Token, get_document_by_url, google, google_callback, login_user, register_user
+from backend.auth import Token, get_document_by_url, google, google_callback, login_user, register_user, get_link_from_id
 from backend.db import Database
 from backend.models import Login, Register, Summarize
 from backend.misc import handle_and_log_exceptions
@@ -71,7 +71,7 @@ class Routes:
         self.app = FastAPI(
             title="Summarily",
             description="""
-            Summarily is a service that provides a set of tools to help you summarize articles, videos, and shorten URLs.
+            Summarily is a service that provides a set of tools to help you summarize articles and videos, also allowing to shorten URLs.
             """,
             summary="Summarily API",
             version="0.0.1",
@@ -88,6 +88,7 @@ class Routes:
         self.router.add_api_route("/auth/register", self.register_route, methods=["POST"])
         self.router.add_api_route("/auth/login", self.login_route, methods=["POST"])
         self.router.add_api_route("/auth/refresh", self.refresh_route, methods=["POST"])
+        self.router.add_api_route("/s/{id}", self.shortlink_route, methods=["GET"])
 
         self.router.add_api_route("/summarize/article", self.summarize_article_route, methods=["POST"])
         self.router.add_api_route("/summarize/video", self.summarize_video_route, methods=["POST"])
@@ -153,6 +154,24 @@ class Routes:
         raise HTTPException(400, "Email is already in use.")
 
 
+    async def shortlink_route(self, id: str):
+        """
+        Redirects to the original URL given a shortlink.
+        @param id: str
+        @return: RedirectResponse
+        """
+        print("Whats my name? sqrt(69) = 8.30 " + id)
+        try:
+            if (link := await get_link_from_id(self.db, int(id))) is not None:
+                print(link["given_link"] + " is the link")
+                return RedirectResponse(url=link["given_link"])
+        except ValueError as e:
+            print(e)
+            raise HTTPException(400, "Invalid shortlink id.")
+        
+        raise HTTPException(404, "Link not found.")
+
+
     # @handle_and_log_exceptions(reraise=HTTPException(500, "Internal server error :("))
     async def login_route(self, form: Login):
         """
@@ -194,7 +213,7 @@ class Routes:
         return {"shortLink": "todo"}
 
 
-    def summarize_article_route(self, form: Summarize):
+    async def summarize_article_route(self, form: Summarize):
         """
         Summerize an article from a URL.
         Steps to parse
@@ -212,7 +231,7 @@ class Routes:
         if not check_valid_url(url):
             raise HTTPException(400, "Invalid URL")
         
-        if (document := get_document_by_url(self.db, form.url)) is not None:
+        if (document := await get_document_by_url(self.db, form.url)) is not None:
             return JSONResponse(content=document, headers={"Access-Control-Allow-Origin": "*", "content-type": "application/json"})
         
         summarized_text = parse_article(url)

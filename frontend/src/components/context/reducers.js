@@ -5,6 +5,13 @@ export default function Reducer(state, action) {
         ...state,
         user: action.payload.user,
       };
-    } 
+    }
+    case "SET_DARK_MODE": {
+      localStorage.setItem("darkMode", action.payload.darkMode)
+      return {
+        ...state,
+        darkMode: action.payload.darkMode
+      }
+    }
   }
 }

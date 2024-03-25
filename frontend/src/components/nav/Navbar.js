@@ -8,12 +8,10 @@ import logo from "../../assets/templogo.png"
 import { useContext, useEffect, useState } from "react";
 import { GlobalContext } from "../context/GlobalContext";
 import { AnimatePresence, motion } from "framer-motion";
-import toast from "react-hot-toast";
 import User from "../../api/User";
 
 const Navbar = () => {
   const [showMenu, setShowMenu] = useState(false);
-  const [darkMode, setDarkMode] = useState(false)
 
   const navigate = useNavigate();
   const { state, dispatch } = useContext(GlobalContext)
@@ -21,11 +19,11 @@ const Navbar = () => {
 
   // Button functions
   const onMenuClick = () => setShowMenu(prev => !prev);
-  const onAccountClick = () => {state.user ? navigate("/") : navigate("/auth")};
+  const onAccountClick = () => pathname !== "/account" && navigate("/account");
   const onHistoryClick = () => pathname !== "/history" && navigate("/history");
   const onHomeClick = () => pathname !== "/" && navigate("/");
   const onBackClick = () => navigate(-1);
-  const onThemeToggle = () => setDarkMode(prev => !prev);
+  const onThemeToggle = () => dispatch({type: "SET_DARK_MODE", payload: { darkMode: !state.darkMode } })
   const onLogOut = () => {
     dispatch({
       type: "SET_USER",
@@ -38,15 +36,16 @@ const Navbar = () => {
   }
 
   useEffect(() => {
-    darkMode && document.documentElement.classList.add("dark");
-    !darkMode && document.documentElement.classList.remove("dark");
-  }, [darkMode])
+    state.darkMode && document.documentElement.classList.add("dark");
+    !state.darkMode && document.documentElement.classList.remove("dark");
+  }, [state.darkMode])
 
   // Automatically close menu when route is changed for quality of life
   useEffect(() => {
     setShowMenu(false);
 
     pathname === "/auth" && state.user && navigate("/")
+    pathname === "/account" && !state.user && navigate("/auth")
   }, [pathname])
 
   // Also used to indicate when a user has already visited before
@@ -72,6 +71,9 @@ const Navbar = () => {
     // If the user hasn't visited once before, redirect to landing page
     if (!localStorage.getItem("FIRST_VISIT"))
       navigate("/landing");
+
+    // Load theme from local storage
+    dispatch({type: "SET_DARK_MODE", payload: { darkMode: localStorage.getItem("darkMode") === "true" }})
   }, []);
 
   return (landingRoutes.findIndex(route => route === pathname) === -1 &&
@@ -92,7 +94,7 @@ const Navbar = () => {
 
         {/* Theme toggle button */}
         <motion.button whileHover={{ scale: 1.1 }} className="phablet-max:hidden w-fit h-fit" onClick={onThemeToggle}>
-          {darkMode ?
+          {state.darkMode ?
             <IoIosSunny className="icon-size" />
             :
             <IoIosMoon className="icon-size" />
@@ -141,7 +143,7 @@ const Navbar = () => {
 
             {/* Theme toggle button */}
             <button className="nav-text-btn" onClick={onThemeToggle} >
-              {darkMode ? "Light Mode" : "Dark Mode"}
+              {state.darkMode ? "Light Mode" : "Dark Mode"}
             </button>
 
             {/* Log out button */}

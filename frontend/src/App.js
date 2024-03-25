@@ -7,7 +7,8 @@ import {
   Landing,
   GetStarted,
   History,
-  StylingGuide
+  StylingGuide,
+  Account
 } from "./pages";
 import Navbar from "./components/nav/Navbar.js";
 import Footer from "./components/footer/Footer.js";
@@ -26,6 +27,7 @@ function App() {
           <Route path="/history" element={<History/>} />
           <Route path="/landing" element={<Landing/>} />
           <Route path="/get-started" element={<GetStarted/>} />
+          <Route path="/account" element={<Account/>} />
           <Route path="/styling-guide" element={<StylingGuide/>} />
           <Route path="/*" element={<NotFound/>} />
         </Routes>

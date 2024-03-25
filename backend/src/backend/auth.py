@@ -108,6 +108,25 @@ async def login_user(db: Database, email: str, password: str) -> Optional[dict]:
     del user["password"]
     return user
 
+async def get_document_by_url(db: Database, url: str) -> Optional[dict]:
+    document = (await (await db.cursor().execute(
+        """select * from public.documents where source_url = %s""",
+        (url, )
+    )).fetchone())
+    
+    return document
+
+async def create_document(db: Database, source_url: str, body: bytes, summary: bytes, title: str, type: str = "webpage") -> Optional[dict]:
+    
+    document = (await (await db.cursor().execute(
+        """
+        insert into private.documents (type, source_url, body, summary, title) values (%s, %s, %s, %s, %s)
+        returning id, created_at, type, source_url, body, summary, title;
+        """,
+        (type, source_url, body, summary, title)
+    )).fetchone())
+        
+    return document
 
 async def register_user(db: Database, email: str, password: str, fullname: str) -> Optional[dict]:
     async with db.transaction() as tx:  # fixme: this doesn't actually start a transaction!
@@ -129,6 +148,44 @@ async def register_user(db: Database, email: str, password: str, fullname: str) 
         )).fetchone())
         return user
 
+
+async def get_link_from_id(db: Database, id: int) -> Optional[str]:
+    link = (await (await db.cursor().execute(
+        """select given_link from public.links where id = %s""",
+        (id, )
+    )).fetchone())
+    return link
+
+
+async def add_user_history(db: Database, document_id: int, link_id: int, user_id: int) -> Optional[dict]:
+    history = (await (await db.cursor().execute(
+        """
+        insert into private.history (document_id, link_id, user_id) values (%s, %s, %s)
+        returning id;
+        """,
+        (document_id, link_id, user_id)
+    )).fetchone())
+    return history
+
+async def create_short_link(db: Database, given_link: str, uid: str) -> Optional[str]:
+    if not uid:
+        link = (await (await db.cursor().execute(
+            """
+            insert into public.links (given_link) values (%s)
+            returning id;
+            """,
+            (given_link, )
+        )).fetchone())
+        return link
+    
+    link = (await (await db.cursor().execute(
+        """
+        insert into public.links (given_link, owner) values (%s, %s)
+        returning id;
+        """,
+        (given_link, uid)
+    )).fetchone())
+    return link
 
 async def check_if_user_exists(db: Database, email: str) -> bool:
     """May raise psycopg.Error on database error."""

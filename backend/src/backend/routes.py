@@ -1,7 +1,7 @@
-from typing import Optional, Tuple, Annotated
+from typing import Literal, Optional, Tuple, Annotated
 
 from fastapi import APIRouter, Depends, Header, Request, FastAPI, HTTPException, Security
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, RedirectResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import HTTPBearer
 
@@ -15,11 +15,11 @@ from starlette.requests import HTTPConnection
 from jwt.exceptions import JWTDecodeError
 
 from backend import config, logger
-from backend.auth import Token, google, google_callback, login_user, register_user
+from backend.auth import Token, create_short_link, get_document_by_url, google, google_callback, login_user, register_user, get_link_from_id, add_user_history
 from backend.db import Database
 from backend.models import Login, Register, Summarize
-from backend.misc import handle_and_log_exceptions
-from backend.misc import check_valid_url
+from backend.misc import handle_and_log_exceptions, check_valid_url, str_to_bytes, bytes_to_str
+from backend.summarize import parse_article
 
 class JWTUser(BaseUser):
     token: Token
@@ -51,6 +51,7 @@ class Routes:
     router: APIRouter
     database: Database
     app: FastAPI
+    OUR_URL: Literal['http://localhost:8080'] = "http://localhost:8080"
 
     def __init__(self, db: Database):
         self.db = db
@@ -70,7 +71,7 @@ class Routes:
         self.app = FastAPI(
             title="Summarily",
             description="""
-            Summarily is a service that provides a set of tools to help you summarize articles, videos, and shorten URLs.
+            Summarily is a service that provides a set of tools to help you summarize articles and videos, also allowing to shorten URLs.
             """,
             summary="Summarily API",
             version="0.0.1",
@@ -87,6 +88,7 @@ class Routes:
         self.router.add_api_route("/auth/register", self.register_route, methods=["POST"])
         self.router.add_api_route("/auth/login", self.login_route, methods=["POST"])
         self.router.add_api_route("/auth/refresh", self.refresh_route, methods=["POST"])
+        self.router.add_api_route("/s/{id}", self.shortlink_route, methods=["GET"])
 
         self.router.add_api_route("/summarize/article", self.summarize_article_route, methods=["POST"])
         self.router.add_api_route("/summarize/video", self.summarize_video_route, methods=["POST"])
@@ -152,6 +154,23 @@ class Routes:
         raise HTTPException(400, "Email is already in use.")
 
 
+    async def shortlink_route(self, id: str):
+        """
+        Redirects to the original URL given a shortlink.
+        @param id: str
+        @return: RedirectResponse
+        """
+        print("Whats my name? sqrt(69) = 8.30 " + id)
+        try:
+            if (link := await get_link_from_id(self.db, int(id))) is not None:
+                return RedirectResponse(url=link["given_link"])
+        except ValueError as e:
+            print(e)
+            raise HTTPException(400, "Invalid shortlink id.")
+        
+        raise HTTPException(404, "Link not found.")
+
+
     # @handle_and_log_exceptions(reraise=HTTPException(500, "Internal server error :("))
     async def login_route(self, form: Login):
         """
@@ -172,14 +191,11 @@ class Routes:
         Renews the expiration date on a JWT token.
         """
         token: Token = request.user.token
-        # check if token is expired
-        if token.is_expired():
-            raise HTTPException(401, "Token is expired")
         return {"token": Token.new(token.uid).encode()}
 
 
     @handle_and_log_exceptions(reraise=HTTPException(500, "Internal server error :("))
-    def shorten_route(self, form: Summarize):
+    async def shorten_route(self, request: Request, form: Summarize):
         """
         Shortens a URL. given a link to shorten
         @param form: Summarize {url: str}
@@ -189,10 +205,18 @@ class Routes:
         if not check_valid_url(form.url):
             raise HTTPException(400, "Invalid URL")
 
-        return {"shortLink": "todo"}
+        try:
+            token = request.user.token
+            uid = Token.decode(token)
+        except Exception as ex:
+            uid = None
+        id = create_short_link(self.db, form.url, uid)        
+        if id is None:
+            raise HTTPException(500, "Internal server error :(")
+        return {"shortLink": f"{self.OUR_URL}/s/{id}"}
 
 
-    def summarize_article_route(self, form: Summarize):
+    async def summarize_article_route(self, request: Request, form: Summarize):
         """
         Summerize an article from a URL.
         Steps to parse
@@ -205,13 +229,47 @@ class Routes:
         7. Pass to ollama
         """
         url = form.url
-        
+        try:
+            token = request.user.token
+            uid = Token.decode(token)
+        except Exception as ex:
+            logger.debug(ex, "token decode error in summarize line 236: routes.py")
+            uid = None
         
         if not check_valid_url(url):
             raise HTTPException(400, "Invalid URL")
         
+        if (document := await get_document_by_url(self.db, form.url)) is not None:
+            
+            created_shorted_link = await create_short_link(self.db, url, uid)
+            if created_shorted_link is None:
+                logger.debug("Internal server error :( line 245: routes.py")
+                raise HTTPException(500, "Internal server error :(")
+            new_shortened_url_id = created_shorted_link["id"]
+            json_document = {
+                "summary": bytes_to_str(document["summary"]),
+                "shortLink": f"{self.OUR_URL}/s/{new_shortened_url_id}"
+            }
+            # add history maybe?
+            return JSONResponse(content=json_document, headers={"Access-Control-Allow-Origin": "*", "content-type": "application/json"})
+        
+        summarized_text, document_id = await parse_article(db=self.db, url=url)
         # add details to database
-        return JSONResponse(content={"summary": "todo", "shortLink": "todo"}, headers={"Access-Control-Allow-Origin": "*", "content-type": "application/json"})
+        shortened_url_id = await create_short_link(self.db, url, uid)["id"]
+        if shortened_url_id is None:
+            print("Internal server error :( line 251: routes.py")
+            raise HTTPException(500, "Internal server error :(")
+        
+        # add to history
+        if uid is not None:
+            try:
+                added_history = await add_user_history(self.db, document_id=int(document_id), link_id=int(shortened_url_id), user_id=int(uid))
+                if added_history is None:
+                    logger.debug("Internal server error :( line 259: routes.py")
+                    raise HTTPException(500, "Internal server error :(")
+            except Exception as ex:
+                logger.debug(ex, "add history error")
+        return JSONResponse(content={"summary": summarized_text, "shortLink": f"{self.OUR_URL}/s/{shortened_url_id}"}, headers={"Access-Control-Allow-Origin": "*", "content-type": "application/json"})
 
 
     @requires(["authenticated"])

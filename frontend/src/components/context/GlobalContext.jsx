@@ -17,6 +17,7 @@ export const GlobalContext = createContext(DEFAULT_STATE);
 export default function GlobalContextProvider({ children }) {
   const [state, dispatch] = useReducer(Reducer, {
     user: null,
+    darkMode: false
   });
 
   return (

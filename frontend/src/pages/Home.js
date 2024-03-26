@@ -35,6 +35,7 @@ const Home = () => {
     const summaryObj = new Summarize(userContext && userContext.user && userContext.user.token ? userContext.user.token : null);
     // check if link is yt video or not 
     const youtubeRegex = /^(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+    toast.loading("Summarizing...");
     if (youtubeRegex.test(inputURLValue)) {
       const responseJSON = await summaryObj.summerizeVideo(inputURLValue);
       console.debug(responseJSON);

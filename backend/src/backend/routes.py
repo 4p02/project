@@ -253,7 +253,7 @@ class Routes:
             # add history maybe?
             return JSONResponse(content=json_document, headers={"Access-Control-Allow-Origin": "*", "content-type": "application/json"})
         
-        summarized_text, document_id = parse_article(url)
+        summarized_text, document_id = await parse_article(db=self.db, url=url)
         # add details to database
         shortened_url_id = await create_short_link(self.db, url, uid)["id"]
         if shortened_url_id is None:
@@ -269,7 +269,6 @@ class Routes:
                     raise HTTPException(500, "Internal server error :(")
             except Exception as ex:
                 logger.debug(ex, "add history error")
-                pass
         return JSONResponse(content={"summary": summarized_text, "shortLink": f"{self.OUR_URL}/s/{shortened_url_id}"}, headers={"Access-Control-Allow-Origin": "*", "content-type": "application/json"})
 
 

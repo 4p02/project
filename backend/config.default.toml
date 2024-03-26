@@ -1,11 +1,13 @@
 log_target = "stderr"
 log_level = "info"
 
+[auth]
 # jwt_secret is randomized when backend-setupcfg is ran
-jwt_secret = "KrTidID0s8udOPENmXGCbZRieeYy5QR5yiEKKeZYTuNqTzQRqSNcj5DhY2kCAqgmViw8YsNFGP826vIY5kB0XvgYaGvnS3dpEi6mQmaEL1DoV4tSKNEiKNn1dqcxrBiu"
+jwt_secret = "secret_with_at_least_32_characters"
 jwt_expiry_days = 7
-google_client_id = "670389606214-ue7v08b9n22ok3v5bnjq59pvrlfcsk3a.apps.googleusercontent.com"
-google_client_secret = "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"
+bcrypt_rounds = 12
+google_client_id = "yourapp.apps.googleusercontent.com"
+google_client_secret = "superbigsecret"
 google_callback_uri = "http://simplify.com:8080/google/callback"
 
 [api]
@@ -13,17 +15,18 @@ host = "0.0.0.0"
 port = 8080
 
 [db]
-# if using postgres over tcp:
-host = "localhost"
-port = 5432
-# if using postgres over a domain socket:
-# host = "/var/run/postgresql/"
+## A postgres connection string to connect to, documented at:
+## https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-CONNSTRING
+# If using postgres over tcp:
+# conx = "host=localhost port=5432 dbname=public user=username password=yoursupersecretpassword"
+# If using postgres over a domain socket:
+conx = "host=/var/run/postgresql/ dbname=public"
 
-user = "backend"
-password = "yoursupersecretpassword"
-dbname = "public"
 current_migration = ""
+pgrest_anon_role = "pgrest_anon"
+pgrest_auth_role = "pgrest_auth"
 
 [ollama]
-endpoint = "http://localhost:11434/"
+endpoint = "https://ollama.cosc.brocku.ca/ollama/"
+bearer_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1iMjBvdEBicm9ja3UuY2EifQ.SAbyYlAh2Qn-9kfKzDHg3a0HwnpLwcgmxa7TWnvH7_w"
 model = "mistral:7b-instruct-v0.2-q4_K_M"

@@ -1,86 +1,120 @@
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
-import Input from "../Input.js";
+import { useState, useContext } from "react";
+import Input from "../inputs/Input.js";
 import FormButton from "./FormButton.js";
+import GoogleButton from "./GoogleButton.js";
+import { GlobalContext } from "../context/GlobalContext.jsx";
+import { BACKEND_API_URL } from "../../lib/Constants.js";
+import { RegisterUser } from "../../api/Auth.js";
+import EmailInput from "../inputs/EmailInput.js";
+import PasswordInput from "../inputs/PasswordValidInput.js";
+import ConfirmPasswordInput from "../inputs/ConfirmPasswordInput.js";
+import toast from "react-hot-toast";
+import User from "../../api/User.js";
 
 const RegisterView = ({ viewToggle }) => {
   const navigate = useNavigate();
+  const {state, dispatch} = useContext(GlobalContext);
   const [name, setName] = useState("");
   const [surname, setSurname] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [error, setError] = useState(false);
+  
+  const onRegisterClick = async () => {
+    const response = await RegisterUser(email, password, `${name} ${surname}`);
+    if (response == "error") {
+      toast.error("Email is already in use");
+      return;
+    }
 
-  const onRegisterClick = () => {
+    toast.success("Account created successfully!");
+    const token = response.token;
+    localStorage.setItem("token", token);
+    toast.success("Registered successfully!");
+    const user = new User(token);
+    dispatch({type: "SET_USER", payload: { user } });
+  }
 
+  const onGoogleRegisterClick = () => {
+    window.location.href = `${BACKEND_API_URL}/auth/google`;
   }
 
   const onGuestClick = () => {
     navigate("/")
   }
-
+  const onSetName = (event) => {
+    setName(event.target.value);
+  }
+  const onSetSurname = (event) => {
+    setSurname(event.target.value);
+  }
+ 
   return (
-    <div className="panel flex flex-col items-center my-auto px-12 w-1/2 *:mb-4 py-6">
-      <div className="w-full flex justify-between space-x-5">
+    <div className="panel phablet-max:bg-white flex flex-col items-center px-12 w-full *:mb-4 py-6">
+      <div className="form-ui-group">
         <Input
-          onChange={(event) => setName(event.target.value)}
+          onChange={onSetName}
           value={name}
-          width="w-1/2"
+          width="form-ui-group-element-width"
           placeholder="John"
           label="Name"
         />
         <Input
-          onChange={(event) => setSurname(event.target.value)}
+          onChange={onSetSurname}
           value={surname}
-          width="w-1/2"
+          width="form-ui-group-element-width"
           placeholder="Doe"
           label="Surname"
         />
       </div>
-      <Input
-        onChange={(event) => setEmail(event.target.value)}
+      <EmailInput 
         value={email}
-        width="w-full"
-        placeholder="john-doe@gmail.com"
-        label="Email"
+        setValue={setEmail}
+        setGlobalError={setError}
       />
-      <Input
-        onChange={(event) => setPassword(event.target.value)}
+      <PasswordInput
         value={password}
-        width="w-full"
-        placeholder="Enter a password..."
-        type="password"
-        label="Password"
-      />
-      <Input
-        onChange={(event) => setConfirmPassword(event.target.value)}
+        setGlobalError={setError}
+        setValue={setPassword}
+      /> 
+      <ConfirmPasswordInput
         value={confirmPassword}
-        width="w-full"
-        placeholder="Re-enter your password..."
-        type="password"
-        label="Confirm Password"
+        setValue={setConfirmPassword}
+        setGlobalError={setError}
+        password={password}
       />
 
       {/* Buttons */}
       <FormButton
-        text="Register"
         onClick={onRegisterClick}
         width="w-full"
+        disabled={error}
+      >
+        Register
+      </FormButton>
+
+      <GoogleButton
+        onClick={onGoogleRegisterClick}
+        text={"Google Sign In"}
       />
 
-      <div className="w-full flex justify-between space-x-5">
+      <div className="form-ui-group">
         <FormButton
-          text="Continue as Guest"
           onClick={onGuestClick}
           isSecondary
-          width="w-1/2"
-        />
+          width="w-full phablet:w-1/2"
+        >
+          Continue as Guest
+        </FormButton>
         <FormButton
-          text="Log in Instead"
           onClick={viewToggle}
           isSecondary
-          width="w-1/2"
-        />
+          width="w-full phablet:w-1/2"
+        >
+          Log in Instead
+        </FormButton>
       </div>
     </div>
   )

@@ -9,15 +9,15 @@ const GetStarted = () => {
   const continueAsGuest = () => navigate("/");
 
   return (
-    <div className="flex flex-col items-center h-screen w-screen p-16">
+    <div className="page px-8 pt-4">
       {/* Header Group */}
       <div className="flex flex-col w-full">
-        <h1 className="title">Create an Account or Log In</h1>
-        <label className="subtitle">Access additional features and save your shortened links and summaries.</label>
+        <h1 className="title phablet-max:text-center">Create an Account or Log In</h1>
+        <label className="subtitle phablet-max:text-[1.25rem] phablet-max:text-center">Access additional features and save your shortened links and summaries.</label>
       </div>
 
       {/* Cards Group */}
-      <div className="flex justify-center w-full my-24">
+      <div className="flex lg:flex-row flex-col justify-center items-center w-full  phablet-max:my-2 my-24">
         <GetStartedCard
           title="Create an Account"
           desc="Sign up for an account to unlock all the features of Shortify.\nSave your shortened links and summaries for easy access."
@@ -30,7 +30,7 @@ const GetStarted = () => {
         />
         <GetStartedCard
           title="Continue as Guest"
-          desc="Want to be anonynymous? Continue with our guest mode.\nNote: Links & summaries won't be saved!"
+          desc="Want to be anonymous? Continue with our guest mode.\nNote: Links & summaries won't be saved!"
           onClick={continueAsGuest}
         />
       </div>

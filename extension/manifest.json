@@ -1,0 +1,30 @@
+{
+  "manifest_version": 2,
+  "name": "Summarily",
+  "version": "1.0",
+  "description": "A web page summarizer and link shortener",
+  "permissions": [],
+  "browser_action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "assets/icon16.jpg",
+      "48": "assets/icon48.jpg",
+      "128": "assets/icon128.jpg"
+    }
+  },
+  "icons": {
+    "16": "assets/icon16.jpg",
+    "48": "assets/icon48.jpg",
+    "128": "assets/icon128.jpg"
+  },
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": false
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"]
+    }
+  ]
+}

@@ -1,15 +1,49 @@
-import Input from "../Input.js"
-import { useState } from "react"
+import Input from "../inputs/Input.js"
+import { useState, useContext } from "react"
 import { useNavigate } from "react-router-dom";
 import FormButton from "./FormButton.js";
+import GoogleButton from "./GoogleButton.js";
+import { LoginUser } from "../../api/Auth.js";
+import { GlobalContext } from "../context/GlobalContext.jsx";
+import { BACKEND_API_URL } from "../../lib/Constants.js";
+import toast from "react-hot-toast";
+import User from "../../api/User.js";
 
 const LoginView = ({ viewToggle }) => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState(false);
+  const {state, dispatch} = useContext(GlobalContext);
 
-  const onLogInClick = () => {
+  const onLogInClick = async () => {
+    const response = await LoginUser(email, password);
+    if (!response.token) {
+      setError(true);
+      toast.error(response.detail)
+      return;
+    }
+    const userObj = new User(response.token);
+    localStorage.setItem("token", response.token);
+    dispatch({
+      type: "SET_USER",
+      payload: {
+        user: userObj
+      }
+    });
 
+    toast.success("Logged in successfully!");
+    navigate("/");
+  }
+
+  const onGoogleLogin = () => {
+    window.location.href = `${BACKEND_API_URL}/auth/google`;
+  }
+  const onSetEmail = (event) => {
+    setEmail(event.target.value);
+  }
+  const onSetPassword = (event) => {
+    setPassword(event.target.value);
   }
 
   const onGuestClick = () => {
@@ -17,16 +51,17 @@ const LoginView = ({ viewToggle }) => {
   }
 
   return (
-    <div className="panel flex my-auto flex-col items-center px-12 w-1/2 *:mb-4 py-6">
+    <div className="panel flex flex-col items-center px-12 w-full *:mb-4 py-6">
       <Input
-        onChange={(event) => setEmail(event.target.value)}
+        onChange={onSetEmail}
         value={email}
         width="w-full"
         placeholder="Enter your email..."
         label="Email"
       />
+      
       <Input
-        onChange={(event) => setPassword(event.target.value)}
+        onChange={onSetPassword}
         value={password}
         width="w-full"
         placeholder="Enter your password..."
@@ -35,24 +70,32 @@ const LoginView = ({ viewToggle }) => {
       />
 
       <FormButton
-        text="Log In"
         onClick={onLogInClick}
         width="w-full"
+      >
+        Log In
+      </FormButton>
+
+      <GoogleButton
+        onClick={onGoogleLogin}
+        text={"Google Log In"}
       />
 
-      <div className="w-full flex justify-between space-x-5">
+      <div className="form-ui-group">
         <FormButton
-          text="Continue as Guest"
           onClick={onGuestClick}
           isSecondary
-          width="w-1/2"
-        />
+          width="form-ui-group-element-width"
+        >
+          Continue as Guest
+        </FormButton>
         <FormButton
-          text="Register Instead"
           onClick={viewToggle}
           isSecondary
-          width="w-1/2"
-        />
+          width="form-ui-group-element-width"
+        >
+          Register Instead
+        </FormButton>
       </div>
     </div>
   )

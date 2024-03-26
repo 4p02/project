@@ -9,9 +9,21 @@
     pb-8
     flex
     flex-col
-    items-center
     content-center
-    h-full
+    items-center
+    min-h-screen
+  }
+
+  .icon-size {
+    @apply
+    w-10
+    h-10
+  }
+
+  .border-col {
+    @apply
+    border-light-gray
+    dark:border-dark-gray
   }
 
   .nav-text-btn {
@@ -19,13 +31,14 @@
     font-[600]
     text-[24px]
     hover:underline
+    w-full
   }
 
   .nav-text-btn-divider {
     @apply
     w-[2px]
     h-1/2
-    bg-[#D1D5DB]
+    bg-light-gray
     rounded-lg
   }
 
@@ -35,33 +48,61 @@
     py-3
     px-0
     text-center
-    text-[24px]
+    text-[20px]
+    phablet:text-[24px]
     font-bold
-    h-fit
-    bg-black
-    text-white
+    h-16
+    bg-dark
+    text-light
+    
+    dark:bg-red-600
   }
   
   .btn-secondary {
     @apply
     btn
     border-2
-    border-black
-    bg-white
-    text-black
+    border-dark
+    bg-light
+    text-dark
+    dark:border-dark
+    dark:bg-light
+    dark:text-dark
   }
 
   .title {
     @apply
     text-[4.5rem]
     font-bold
-    text-[#191919]
+    text-dark
+    dark:text-light
+
+    phablet-max:text-[3.5rem]
   }
 
   .subtitle {
     @apply
-    text-[24px]
-    text-gray-500
+    text-[1.5rem]
+    text-dark-gray
+    dark:text-light-gray
+  }
+
+  .form-ui-group {
+    @apply
+    w-full
+    flex
+    phablet:flex-row
+    flex-col
+    justify-between
+    space-y-5
+    phablet:space-y-0
+    phablet:space-x-5
+  }
+
+  .form-ui-group-element-width {
+    @apply
+    w-full
+    phablet:w-1/2
   }
 
   .panel {
@@ -69,7 +110,9 @@
     /* border-2
     bg-gray-100
     border-gray-400 */
-    bg-[#F8F8F8]
+    bg-light-gray
+    dark:bg-dark-complement
+    text-inherit
     shadow-lg
     rounded-2xl
   }
@@ -82,8 +125,16 @@
 		/* background by SVGBackgrounds.com */
 		bg-fixed
 		bg-center
-		text-white
     overflow-x-hidden
-		;
+    
+    bg-light
+    text-dark
+
+    dark:bg-dark
+    dark:text-light
 	}
+}
+
+* {
+  scrollbar-width: thin;
 }

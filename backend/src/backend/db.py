@@ -1,36 +1,55 @@
-import psycopg2
+"""Database connection stuff."""
+
+
+import asyncio
+import re
+from string import Formatter
+from typing import Self
+import functools
+
+from psycopg import AsyncConnection, AsyncCursor, AsyncTransaction
+from psycopg.rows import dict_row
+
+from backend import config, logger
+
+
+_RE_CONX_ESCAPE = re.compile(r"(['\\])")
 
 
 class Database:
-    def __init__(self):
-        # self.connection = psycopg2.connect(POSTGRES_URL)
-        self.cursor = self.connection.cursor()
-    def __del__(self):
-        self.connection.close()
+    conx: AsyncConnection
 
-    def create_tables(self):
-        # self.cursor.execute(CREATE_TABLES_QUERY)
-        self.connection.commit()
+    def __init__(self, conx: AsyncConnection):
+        self.conx = conx
 
-    def drop_tables(self):
-        # self.cursor.execute(DROP_TABLES_QUERY)
-        self.connection.commit()
-    
-    def add_test_data(self):
-        # TODO
-        self.connection.commit()
+    @staticmethod
+    async def connect() -> Self:
+        logger.debug("connecting to db: " + config.db.conx)
+        return Database(
+            await AsyncConnection.connect(
+                config.db.conx,
+                # make .fetch methods produce dicts by default, instead of tuples
+                row_factory=dict_row,
+                autocommit=True  # don't treat everything as a transaction
+            )
+        )
 
-    def register_user(self):
-        # TODO
-        self.connection.commit()
+    # Both AsyncConnection and this class *must* be used in `async with` blocks
+    # to ensure that when the connection is freed, any running transactions are
+    # either rolled back or committed and the connection is closed to avoid
+    # database inconsistencies or data loss on abnormal exit.
+    async def __aenter__(self) -> Self:
+        await self.conx.__aenter__()
+        return self
 
-    def login_user(self):
-        # TODO
-        self.connection.commit()
+    async def __aexit__(self, *args, **kwargs):
+        await self.conx.__aexit__(*args, **kwargs)
+        return
 
-    def get_history_route(self):
-        # TODO
-        pass
-    
+    @functools.wraps(AsyncConnection.cursor)
+    def cursor(self, **kwargs) -> AsyncCursor: return self.conx.cursor(**kwargs)
 
-database = Database()
+    # fixme: this does not work with async connections!! different async threads will interefere with transactions!
+    # fixme: use a connection pool instead!
+    @functools.wraps(AsyncConnection.transaction)
+    def transaction(self, **kwargs) -> AsyncTransaction: return self.conx.transaction(**kwargs)

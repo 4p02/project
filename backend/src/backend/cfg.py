@@ -69,12 +69,15 @@ class Config():
 
     log_level: Union[int, Literal['debug', 'info', 'warning', 'error', 'critical']]
     log_target: Literal["stderr", "syslog"]
-    jwt_secret: str
-    jwt_expiry_days: int
-    google_client_id: str
-    google_client_secret: str
-    google_callback_uri: str
 
+    auth: TypedDict("auth",
+        jwt_secret=str,
+        jwt_expiry_days=int,
+        bcrypt_rounds=int,
+        google_client_id=str,
+        google_client_secret=str,
+        google_callback_uri=str,
+    )
 
     api: TypedDict("api",
         host=str,
@@ -82,15 +85,14 @@ class Config():
     )
 
     db: TypedDict("db",
-        host=str,
-        port=NotRequired[Optional[int]],
-        user=NotRequired[Optional[str]],
-        password=NotRequired[Optional[str]],
-        dbname=str,
+        conx=str,
         current_migration=str,
+        pgrest_anon_role=str,
+        pgrest_auth_role=str,
     )
 
     ollama: TypedDict("",
         endpoint=str,
+        bearer_token=NotRequired[Optional[str]],
         model=str,
     )

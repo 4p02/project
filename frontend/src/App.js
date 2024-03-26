@@ -6,7 +6,9 @@ import {
   NotFound,
   Landing,
   GetStarted,
-  History
+  History,
+  StylingGuide,
+  Account
 } from "./pages";
 import Navbar from "./components/nav/Navbar.js";
 import Footer from "./components/footer/Footer.js";
@@ -15,7 +17,7 @@ import GlobalContextProvider from "./components/context/GlobalContext.jsx";
 function App() {
   
   return (
-    <main className="w-screen h-screen text-black">
+    <main className="w-screen h-screen bg-light text-dark dark:bg-dark dark:text-light">
       <GlobalContextProvider> 
         <Navbar />
         <Toaster />
@@ -25,10 +27,12 @@ function App() {
           <Route path="/history" element={<History/>} />
           <Route path="/landing" element={<Landing/>} />
           <Route path="/get-started" element={<GetStarted/>} />
+          <Route path="/account" element={<Account/>} />
+          <Route path="/styling-guide" element={<StylingGuide/>} />
           <Route path="/*" element={<NotFound/>} />
         </Routes>
+        <Footer />
       </GlobalContextProvider>
-      <Footer />
     </main>
   );
 }

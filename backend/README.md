@@ -51,7 +51,7 @@ This creates the file [`config.toml`](./config.toml) in the pip project director
 
 
 ## Installing & Configuring Postgres
-To setup postgres, on any platform but windows, install the appropriate package:
+To setup postgres `>= 9.6`, on any platform but windows, install the appropriate package:
 - Homebrew: `brew install postgresql`
 - Debian/Ubuntu based: `apt install postgresql`
 
@@ -68,6 +68,25 @@ sudo -u postgres createdb -O $USERNAME public
 
 Edit [`config.toml`](./config.toml) and change the fields under the `[db]` section to include the username, and database set above. If you installed postgres from a package and it is using a domain socket, change the `host` field to the directory containing the socket.
 
+## Installing & Configuring PostgREST
+
+For linux and mac you can install and run using the script located in `./backend/postgrest.setup.sh` by running the following command:
+```bash
+bash ./backend/postgrest.setup.sh
+```
+
+For windows, you can download the latest using `choco` or `scoop` and then run the following command:
+```bash
+choco install postgrest
+```
+Or if you have `scoop` installed:
+```bash
+scoop install postgrest
+```
+
+The script will start the server automatically. Make sure you are using postgres `>=9.6`.
+Make sure to edit the postgrest.config file to match the database and user you created in the previous step.
+
 ## Running the Server
 
 Run the main server entrypoint
@@ -80,3 +99,7 @@ Find the `/etc/hosts` file on the system and add the following line:
 `127.0.0.1 simplify.com`
 
 Then email jonathan to add ur gmail to the google oauth client list and for the client secret, (the one is an example)
+
+## Fast API docs
+
+Go to the url `http://127.0.0.1:8080/docs` to see the fast api documentation

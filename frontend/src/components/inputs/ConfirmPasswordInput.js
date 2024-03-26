@@ -1,10 +1,7 @@
-
-
-
 import { useState } from "react";
 import Input from "./Input.js";
 
-export function ConfirmPasswordInput({value, setValue, setGlobalError, password}) {
+export default function ConfirmPasswordInput({value, setValue, setGlobalError, password}) {
     const [error, setError] = useState("");
     const onSetPassword = (event) => {
         setValue(event.target.value);

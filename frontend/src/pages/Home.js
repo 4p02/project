@@ -32,7 +32,7 @@ const Home = () => {
       return;
     }
   
-    const summaryObj = new Summarize(userContext && userContext.user && userContext.user.token ? userContext.user.token : null);
+    const summaryObj = new Summarize(state && state.user && state.user.token ? state.user.token : null);
     
     // check if link is yt video or not 
     const youtubeRegex = /^(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;

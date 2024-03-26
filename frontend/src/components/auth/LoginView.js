@@ -1,11 +1,11 @@
 import Input from "../inputs/Input.js"
-import { useEffect, useState, useContext } from "react"
+import { useState, useContext } from "react"
 import { useNavigate } from "react-router-dom";
 import FormButton from "./FormButton.js";
 import GoogleButton from "./GoogleButton.js";
 import { LoginUser } from "../../api/Auth.js";
 import { GlobalContext } from "../context/GlobalContext.jsx";
-import { BACKEND_API_URL, CheckTokenAndState } from "../../lib/Constants.js";
+import { BACKEND_API_URL } from "../../lib/Constants.js";
 import toast from "react-hot-toast";
 import User from "../../api/User.js";
 

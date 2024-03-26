@@ -1,15 +1,19 @@
-const Account = () => {
-  const list = ["Change Password", "Delete Account"];
+import ChangeEmailSection from "../components/account/ChangeEmailSection"
+import ChangePasswordSection from "../components/account/ChangePasswordSection"
+import ClearHistorySection from "../components/account/ClearHistorySection"
+import DeleteAccountSection from "../components/account/DeleteAccountSection"
+import DetailsSection from "../components/account/DetailsSection"
 
+const Account = () => {
   return (
     <div className="page">
       <h1 className="title">Account Settings</h1>
-      <div className="panel w-2/3 first:border-t-0 last:border-b-0 *:mt-1 p-0">
-        {list.map( (txt, index) =>
-          <div key={index} className="text-center text-lg w-full h-fit border-col border-2">
-            {txt}
-          </div>
-        )}
+      <div className="panel w-2/3 [&>*:first-child]:border-t-0 py-2">
+        <DetailsSection />
+        <ChangeEmailSection />
+        <ChangePasswordSection />
+        <ClearHistorySection />
+        <DeleteAccountSection />
       </div>
     </div>
   )

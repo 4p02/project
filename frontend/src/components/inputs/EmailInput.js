@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Input from "./Input.js";
-export function EmailInput({value, setValue, setGlobalError}) {
+
+export default function EmailInput({value, setValue, setGlobalError, label, placeholder}) {
     const [error, setError] = useState("");
     const onSetEmail = (event) => {
         setValue(event.target.value);
@@ -20,19 +21,17 @@ export function EmailInput({value, setValue, setGlobalError}) {
         setGlobalError(false);
     }
     return (
-        <>
-        <Input 
-            onChange={onSetEmail}
-            value={value}
-            width="w-full"
-            type={"email"}
-            placeholder="Enter your email..."
-            label="Email"
-            errorMsg="Invalid email address"
-            error={error !== ""}
-            onBlur={onBlur}
-            onFocus={onFocus}
-        />
-        </>
+      <Input 
+          onChange={onSetEmail}
+          value={value}
+          width="w-full"
+          type={"email"}
+          placeholder={placeholder || "Enter your email..."}
+          label={label || "Email"}
+          errorMsg="Invalid email address"
+          error={error !== ""}
+          onBlur={onBlur}
+          onFocus={onFocus}
+      />
     )
 }

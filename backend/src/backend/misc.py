@@ -4,6 +4,8 @@ import asyncio
 from typing import Any, Awaitable, Callable, Union
 import functools
 from urllib.parse import urlparse
+import socket
+from ipaddress import ip_network
 
 from backend import logger
 
@@ -86,17 +88,56 @@ def str_to_bytes(data: str) -> bytes:
     """
     return data.encode("utf-8")
 
-def check_valid_url(url: str):
+
+# All of the IPs used to
+(_, _, PRIVATE_HOST_IPS) = socket.gethostbyname_ex(socket.gethostname())
+
+# https://en.wikipedia.org/wiki/Reserved_IP_addresses
+PRIVATE_NETWORKS = [
+    ip_network("0.0.0.0/8"),
+    ip_network("10.0.0.0/8"),
+    ip_network("100.64.0.0/10"),
+    ip_network("127.0.0.0/8"),
+    ip_network("169.254.0.0/16"),
+    ip_network("172.16.0.0/12"),
+    ip_network("192.0.0.0/24"),
+    ip_network("192.0.2.0/24"),
+    ip_network("192.88.99.0/24"),
+    ip_network("192.168.0.0/16"),
+    ip_network("198.18.0.0/15"),
+    ip_network("198.51.100.0/24"),
+    ip_network("203.0.113.0/24"),
+    ip_network("224.0.0.0/4"),
+    ip_network("233.252.0.0/24"),
+    ip_network("240.0.0.0/4"),
+    ip_network("255.255.255.255/32"),
+    *(ip_network(ip) for ip in PRIVATE_HOST_IPS)
+]
+
+
+def check_valid_url(url: str) -> bool:
     """
     Check if the given URL is valid.
     """
-    if not url.startswith("http://") and not url.startswith("https://"):
+    parsed = urlparse(url)
+
+    if parsed.scheme == "" or parsed.hostname is None:
         return False
-    # check if url is localhost or an ip address which is not allowed for security things
-    if urlparse(url).hostname in ["localhost", "127.0.0.1", "0.0.0.0"]:
+
+    # don't allow protocols other than http (like ftp://)
+    if parsed.scheme != "http" and parsed.scheme != "https":
         return False
-    elif urlparse(url).hostname is None:
+
+    # if host is a hostname: resolve the hostname into it's canonical ip
+    # if host is an ip: normalize the ip address
+    try:
+        (_, _, url_ips) = socket.gethostbyaddr_ex(parsed.hostname)
+        hostname_ips = [ip_address(ip) for ip in url_ips]
+    except socket.gaierror:
         return False
-    
-    print(url)
+
+    # then check if the all the hostname ip addresses are outside a private or local subnet
+    if not all(hostname_ip not in network for hostname_ip in hostname_ips for network in PRIVATE_NETWORKS):
+        return False
+
     return url

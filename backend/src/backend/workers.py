@@ -47,8 +47,7 @@ class WorkerUnion:
             # it is being added to the worker queue, it'll be unloaded when
             # self.__aexit__ is called anyways, so there's no problem with the
             # exit/entry order...
-            await self.workers[job_name].pool.__aenter__()
-            
+            await self.workers[task].pool.__aenter__()
 
 
     async def dispatch_task_block(self, task: str, *args, **kwargs):

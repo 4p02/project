@@ -5,7 +5,7 @@ from typing import Any, Awaitable, Callable, Union
 import functools
 from urllib.parse import urlparse
 import socket
-from ipaddress import ip_network
+from ipaddress import ip_address, ip_network
 
 from backend import logger
 

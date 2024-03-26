@@ -111,10 +111,6 @@ PRIVATE_NETWORKS = [
     ip_network("233.252.0.0/24"),
     ip_network("240.0.0.0/4"),
     ip_network("255.255.255.255/32"),
-    ip_network("::1/128"),
-    ip_network("::/128"),
-    ip_network("64:ff9b:1::/48"),
-    ip_network("fc00::/7")
     *(ip_network(ip) for ip in PRIVATE_HOST_IPS)
 ]
 

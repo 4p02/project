@@ -69,14 +69,23 @@ async def summarize_video(video_url):
 async def test_ollama_question():
     llama_client = await Llama.connect()
     question = "What is 1+1?"
-    response = await llama_client.chat(messages=[{"role": "user", "content": question}])
+
+    # Construct the message with the role 'user'
+    user_message = {"content": question, "role": "user"}
+
+
+    response = await llama_client.chat(messages=[user_message], format='json')
+
+
     answer = response.messages[-1].content
     return answer
 
 
+
+
 async def main():
     video_url = "https://youtu.be/_IS2SetIpOU?si=iRo1BAlpetmHiKVw"  # Video URL to summarize
-    # summary_task = summarize_video(video_url)
+    # summary_task =await  summarize_video(video_url)
     answer = await test_ollama_question()
     print(f"Answer to 'What is 1+1?': {answer}")
 
